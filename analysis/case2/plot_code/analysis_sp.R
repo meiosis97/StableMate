@@ -1,5 +1,5 @@
 ############### The following preloading was used for the entire script (MUST RUN) ############### 
-############### All the plot sessions (except for Figure S4C) can be ran independently of each others after running the preloading ############### 
+############### All the plot sessions (except for Figure 5C) can be ran independently of each others after running the preloading ############### 
 require(dplyr)
 require(vegan)
 require(ggpubr)
@@ -8,7 +8,7 @@ require(RColorBrewer)
 require(pROC)
 require(rstatix)
 require(ggvenn)
-setwd('F:/stablemate/stablemate')
+setwd('/data/gpfs/projects/punim1662/yidi_projects/stablemate/')
 source('./stablemate.R')
 data_list <- readRDS('./case2/data/processed_data_sp.RDS')
 
@@ -16,7 +16,7 @@ data_list <- readRDS('./case2/data/processed_data_sp.RDS')
 meta_data <- data_list[[3]]
 cohort <- meta_data$cohort
 country_table <- c('Austria', 'Italy A', 'Italy B',
-                  'USA', 'Germany', 'Japan', 'China', 'France')
+                   'USA', 'Germany', 'Japan', 'China', 'France')
 names(country_table) <- unique(cohort)
 country <- country_table[cohort]
 
@@ -31,13 +31,16 @@ sample_type[sample_type == 'control'] <- 'Normal'
 # Create a seperate variable for storing species names
 species <- colnames(data_list[[1]])
 
-############### Figure S4A ############### 
-load('./case2/r_object/sp/all/all.RData')
-# Make plot
-plot.SRST2E(mod, label_size = 4) +  theme(text = element_text(size = 15), legend.position = 'bottom') + ylim(0,1)
-
-
 ############### Figure 3A ############### 
+load('./case2/r_object/sp/all/all.RData')
+source('/data/gpfs/projects/punim1662/yidi_projects/stablemate/stablemate.R')
+# Make plot
+plot.SRST2E(mod, label_size = 4) +  theme(text = element_text(size = 18)) + ylim(0,1)+ 
+  xlab('Predictivity score: predictive in the pooled data') +
+  ylab('Stability score')
+
+
+############### Figure 3B ############### 
 load('./case2/r_object/sp/all/all.RData')
 
 # MDS and permutation ANOVA on the full data
@@ -72,7 +75,7 @@ p2 <- ggscatter(mds_all, x = "X1", y = "X2",
   annotate("text", x = -Inf, y = Inf, label = paste("R2 =", round(permanova_all$R2[1],6)),parse = F, size = 5,
            vjust=1, hjust=0)+
   theme(text = element_text(size=15),
-        axis.title.x = element_text(hjust = -3)) +
+        axis.title.x = element_text(hjust = -2)) +
   xlab('PCoA1 on all the 313 species') + ylab('') 
 
 # MDS and permutation ANOVA on the 23 species selected by stablemate
@@ -109,58 +112,33 @@ p4 <- ggscatter(mds_sm, x = "X1", y = "X2",
            label = "R2 = 0.08861",parse = F, size = 5,
            vjust=1, hjust=0)+ylab('')+
   theme(text = element_text(size=15),
-        axis.title.x = element_text(hjust = -20)) +
+        axis.title.x = element_text(hjust = -5)) +
   xlab('PCoA1 on the 23 species selected') + ylab('') 
 
 # Combine plots
 ggarrange(p1,p2,p3,p4, align = 'v', common.legend = T, legend = 'right')
 
-# facet warp plot 
-mds_all$nvar <- 'All 313 species'
-mds_sm$nvar <- 'StableMate 23 species'
-mds_warp <- rbind(mds_all,mds_sm)
-dat_text <- data.frame(
-  label = c(paste("R2 =", round(permanova_all$R2[2],6)), paste("R2 =", round(permanova_sm$R2[2],6))),
-  nvar   = c('All 313 species', 'StableMate 23 species')
-)
-ggscatter(mds_warp, x = "X1", y = "X2", 
-                color = 'Sample type',
-                palette =  c('orange','black'),
-                size = 1.8, 
-                ellipse = TRUE,
-                ellipse.type = "convex",ellipse.alpha = 0.02,
-                repel = TRUE)+ theme_gray() + facet_wrap(~nvar, ncol = 2, scales = 'free')+
-  theme(text = element_text(size=15), legend.position="bottom") + xlab('PCoA1') + ylab('PCoA2')+
-  geom_text(data = dat_text, aes(x = -Inf, y = Inf, label = label), hjust = 0, vjust = 1, size = 5)
-
-
-dat_text <- data.frame(
-  label = c(paste("R2 =", round(permanova_all$R2[1],6)), paste("R2 =", round(permanova_sm$R2[1],6))),
-  nvar   = c('All 313 species', 'StableMate 23 species')
-)
-ggscatter(mds_warp, x = "X1", y = "X2", 
-          color = 'Cohort',
-          palette =  cols,
-          size = 1.8, 
-          ellipse = TRUE,
-          ellipse.type = "convex",ellipse.alpha = 0.02,
-          repel = TRUE)+ theme_gray() + facet_wrap(~nvar, ncol = 2, scales = 'free')+
-  theme(text = element_text(size=15), legend.position="bottom") + xlab('PCoA1') + ylab('PCoA2') +
-  geom_text(data = dat_text, aes(x = -Inf, y = Inf, label = label), hjust = 0, vjust = 1, size = 5)
-
-# Variance parition 
+# RDS bar plot
 var_source <- c('Cohort','Sample type', 'Residual' )
 var_source <- factor(var_source, levels =  c('Residual','Sample type', 'Cohort' ))
 col_plot <- data.frame(y = c(rep('All 313 species', 3), rep('StableMate 23 species', 3)),
                        var_source = var_source,
                        R2 = c(permanova_all$R2[-4], permanova_sm$R2[-4]))
 ggplot(col_plot) + geom_col(aes(y = y, x = R2,
-                        fill =var_source), position = position_stack()) + 
+                                fill =var_source), position = position_stack()) + 
   scale_fill_manual('Variable', values = c('grey','blue','red')) + theme(text = element_text(size = 15)) +
   ylab('') 
 
 
-############### Figure 3B ############### 
+############### Figure 3C ############### 
+load('./case2/r_object/sp/one_by_one/FengQ_2015.RData')
+source('/data/gpfs/projects/punim1662/yidi_projects/stablemate/stablemate.R')
+# Make plot
+plot.SRST2E(mod, label_size = 4) +  theme(text = element_text(size = 18), legend.position = 'bottom') +
+  ylim(0,1) + xlab('Predictivity score: predictive in the Austria cohort')+ ylab('Stability score')
+
+
+############### Figure S5 ############### 
 # Create a matrix for storing predictivity scores
 score_mat <- data.frame(matrix(NA, ncol = length(species), nrow = length(country_table)))
 # Create a indicator matrix for indicating predictive and stable predictors for each cohort.
@@ -251,16 +229,10 @@ ggplot() + geom_col(aes(1:length(species),1:length(species),color = 1:length(spe
   scale_fill_manual('Selection frequency',values = RColorBrewer::brewer.pal(5,'Greens'))
 
 
-############### Figure S4B ############### 
-load('./case2/r_object/sp/one_by_one/FengQ_2015.RData')
-# Make plot
-plot.SRST2E(mod) +  theme(text = element_text(size = 15)) + ylim(0,1)
-
-
-############### Figure 3C ############### 
+############### Figure 5A ############### 
 # Create a matrix for storing LODO results
 AUC_mat <- data.frame(matrix(NA, ncol = 5, nrow = length(country_table)))
-colnames(AUC_mat) <- c('SM-stab','SM-pred','GLM', 'LASSO', 'RF')
+colnames(AUC_mat) <- c('STBM-stab','STBM-pred','GLM', 'Lasso', 'RF')
 rownames(AUC_mat) <- country_table
 
 # Create a function for LODO benchmark
@@ -279,19 +251,19 @@ benchmark <- function(){
   # Prediction with predictive ensemble
   Yhat <- predict(mod, Xtest,  assay = 'prediction_ensemble', predict_fun = predict_logit)
   auc_smpred <- suppressMessages(auc(as.factor(Ytest), Yhat))
-
+  
   # Train GLM (logistic regression) and test on the testing cohort
   glm_mod <- glm(Ytrain~., data = data.frame(Xtrain), family = 'binomial', weights = w)
   Yhat <- predict(glm_mod, data.frame(Xtest), type = 'response')
   auc_glm <- suppressMessages(auc(as.factor(Ytest), as.numeric(Yhat)))
-
+  
   # Train Lasso (logistic regression) and test on the testing cohort
   # Training environments were used as folds for cross validation
   glmnet_mod <- cv.glmnet(Xtrain, Ytrain, family = 'binomial',
-                         weights = w, foldid = as.numeric(as.factor(envs))) 
+                          weights = w, foldid = as.numeric(as.factor(envs))) 
   Yhat <- predict(glmnet_mod, Xtest, s = glmnet_mod$lambda.1se)
   auc_lasso <- suppressMessages(auc(as.factor(Ytest), as.numeric(Yhat)))
-
+  
   # Train RF  and test on the testing cohort
   rf_mod <- randomForest::randomForest(Xtrain, as.factor(Ytrain), weights = w)
   Yhat <- predict(rf_mod, Xtest, type = 'prob')[,2]
@@ -310,7 +282,7 @@ for(c in names(country_table)){
   
   # Record predictivity scores
   AUC_mat[country_table[c],] <- benchmark()
-
+  
 }
 
 # Prepare the data for boxplot
@@ -320,7 +292,7 @@ plot_data <- melt(plot_data)
 
 # Paired t-test
 AUC_test <- plot_data   %>%  t_test(value ~ variable, 
-                                     ref.group = 'SM-stab', paired = TRUE)
+                                    ref.group = 'STBM-stab', paired = TRUE)
 AUC_test$y.position <- c(0.9,0.925,0.95,0.975)
 
 # Make the plot
@@ -330,12 +302,12 @@ ggboxplot(
   theme_gray() + geom_point(aes(x= variable, y = value, col = dataset),size=3) +
   ylab('AUC') + xlab('Method')+
   scale_color_manual('Cohort', values = cols)+
-  theme(text = element_text(size = 15), legend.position = 'bottom') +
+  theme(text = element_text(size = 15), legend.position = 'right', axis.text.x = element_text(angle = 15)) +
   scale_x_discrete(labels=paste(colnames(AUC_mat), round(colMeans(AUC_mat),3), sep = '\n'))  + 
   guides(color=guide_legend(ncol=2)) + ylim(0.5,1)
 
 
-############### Figure 3D ############### 
+############### Figure 5B ############### 
 load('./case2/r_object/sp/all/all.RData')
 
 # Weight samples by cohort-case (disease status) sizes
@@ -372,7 +344,7 @@ sm_and_lasso_sel <- intersect(sm_sel, lasso_sel) # Predictors selected by stable
 sm_or_lasso_sel <- unique(c(sm_sel, lasso_sel)) # Predictors selected by stablemate or Lasso
 
 
-############### Figure S4C (Running Figure 3D is required) ############### 
+############### Figure 5C (Running Figure 5B is required) ############### 
 # Benchmark variable selection by training RF models with different predictor subsets and run LODO assessment on the RF models. 
 benchmark <- function(){
   # Weight samples by cohort-case (disease status) sizes
@@ -417,7 +389,7 @@ benchmark <- function(){
 
 # Create a matrix for storing LODO results
 AUC_mat <- data.frame(matrix(nrow = length(country_table), ncol =6))
-colnames(AUC_mat) <- c('RF & Lasso & SM', 'Lasso & SM', 'Lasso | SM', 'Lasso', 'RF','SM')
+colnames(AUC_mat) <- c('RF & Lasso & STBM', 'Lasso & STBM', 'Lasso | STBM', 'Lasso', 'RF','STBM')
 rownames(AUC_mat) <- country_table
 
 # LODO
@@ -449,13 +421,12 @@ ggboxplot(
   theme_gray() + geom_point(aes(x= variable, y = value, col = dataset),size=3) +
   ylab('AUC') + xlab('Selection')+
   scale_color_manual('Cohort', values = cols)+
-  theme(text = element_text(size = 15), legend.position = 'bottom',
-        axis.text.x = element_text(angle = 45,hjust = 1)) +
+  theme(text = element_text(size = 15), legend.position = 'right', axis.text.x = element_text(angle = 20)) +
   scale_x_discrete(labels=paste(colnames(AUC_mat), round(colMeans(AUC_mat),3), sep = '\n'))  + 
-  guides(color=guide_legend(ncol=2)) + ylim(0.5,1)
+  guides(color=guide_legend(ncol=1)) + ylim(0.5,1)
 
 
-############### Figure S4D ############### 
+############### Figure S4 ############### 
 load('./case2/r_object/sp/all/all.RData')
 
 # Make the boxplot of the distribution of Bacteroides xylanisolvens abundance
@@ -482,7 +453,7 @@ p2 <- ggplot() + geom_boxplot(aes(country, X[,'Prevotella copri'],col = as.facto
 ggarrange(p1,p2, align = 'v', ncol = 1, common.legend = T, legend = 'right')
 
 
-############### Figure S6A ############### 
+############### Figure S7A ############### 
 load('./case2/r_object/sp/all/all.RData')
 
 # Weight samples by cohort-case (disease status) sizes

@@ -14,7 +14,7 @@ data_list <- readRDS('./case2/data/processed_data_pw.RDS')
 meta_data <- data_list[[3]]
 cohort <- meta_data$cohort
 country_table <- c('Austria', 'Italy A', 'Italy B',
-                  'USA', 'Germany', 'Japan', 'China', 'France')
+                   'USA', 'Germany', 'Japan', 'China', 'France')
 names(country_table) <- unique(cohort)
 country <- country_table[cohort]
 
@@ -30,7 +30,7 @@ sample_type[sample_type == 'control'] <- 'Normal'
 pathway <- colnames(data_list[[1]])
 
 
-############### Figure S5A ############### 
+############### Figure S6A ############### 
 # Create a matrix for storing predictivity scores
 score_mat <- data.frame(matrix(NA, ncol = length(pathway), nrow = length(country_table)))
 # Create a indicator matrix for indicating predictive and stable predictors for each cohort.
@@ -121,7 +121,7 @@ ggplot() + geom_col(aes(1:length(pathway),1:length(pathway),color = 1:length(pat
   scale_fill_manual('Selection frequency',values = RColorBrewer::brewer.pal(5,'Greens'))
 
 
-############### Figure S4C ############### 
+############### Figure S6C ############### 
 load('./case2/r_object/pw/all/all.RData')
 
 # Make the boxplot of the distribution of L-arginine biosynthesis III abundance
@@ -135,13 +135,13 @@ ggplot() + geom_boxplot(aes(country, X[,'PWY-5154: L-arginine biosynthesis III (
         axis.text.x = element_text(angle = 45, vjust = 0.5), axis.title.y = element_text(hjust = 1),legend.position = 'right' )
 
 
-############### Figure S4D ############### 
+############### Figure S6D ############### 
 load('./case2/r_object/pw/one_by_one/FengQ_2015.RData')
 # Make plot
 plot.SRST2E(mod) +  theme(text = element_text(size = 15)) + ylim(0,1)
 
 
-############### Figure S4B ############### 
+############### Figure S6B ############### 
 # Create a matrix for storing LODO results
 AUC_mat <- data.frame(matrix(NA, ncol = 5, nrow = length(country_table)))
 colnames(AUC_mat) <- c('SM-stab','SM-pred','GLM', 'LASSO', 'RF')
@@ -163,19 +163,19 @@ benchmark <- function(){
   # Prediction with predictive ensemble
   Yhat <- predict(mod, Xtest,  assay = 'prediction_ensemble', predict_fun = predict_logit)
   auc_smpred <- suppressMessages(auc(as.factor(Ytest), Yhat))
-
+  
   # Train GLM (logistic regression) and test on the testing cohort
   glm_mod <- glm(Ytrain~., data = data.frame(Xtrain), family = 'binomial', weights = w)
   Yhat <- predict(glm_mod, data.frame(Xtest), type = 'response')
   auc_glm <- suppressMessages(auc(as.factor(Ytest), as.numeric(Yhat)))
-
+  
   # Train Lasso (logistic regression) and test on the testing cohort
   # Training environments were used as folds for cross validation
   glmnet_mod <- cv.glmnet(Xtrain, Ytrain, family = 'binomial',
-                         weights = w, foldid = as.numeric(as.factor(envs))) 
+                          weights = w, foldid = as.numeric(as.factor(envs))) 
   Yhat <- predict(glmnet_mod, Xtest, s = glmnet_mod$lambda.1se)
   auc_lasso <- suppressMessages(auc(as.factor(Ytest), as.numeric(Yhat)))
-
+  
   # Train RF  and test on the testing cohort
   rf_mod <- randomForest::randomForest(Xtrain, as.factor(Ytrain), weights = w)
   Yhat <- predict(rf_mod, Xtest, type = 'prob')[,2]
@@ -194,7 +194,7 @@ for(c in names(country_table)){
   
   # Record predictivity scores
   AUC_mat[country_table[c],] <- benchmark()
-
+  
 }
 
 # Prepare the data for boxplot
@@ -204,7 +204,7 @@ plot_data <- melt(plot_data)
 
 # Paired t-test
 AUC_test <- plot_data   %>%  t_test(value ~ variable, 
-                                     ref.group = 'SM-stab', paired = TRUE)
+                                    ref.group = 'SM-stab', paired = TRUE)
 AUC_test$y.position <- c(0.9,0.925,0.95,0.975)
 
 # Make the plot
@@ -219,7 +219,7 @@ ggboxplot(
   guides(color=guide_legend(ncol=2)) + ylim(0.5,1)
 
 
-############### Figure S6B ############### 
+############### Figure S7B ############### 
 load('./case2/r_object/pw/all/all.RData')
 
 # Weight samples by cohort-case (disease status) sizes
