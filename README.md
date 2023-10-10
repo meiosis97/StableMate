@@ -3,6 +3,8 @@ StableMate [(Deng et al.2023)](https://www.biorxiv.org/content/10.1101/2023.09.2
 
 StableMate is built based on the theoretical foundation of **Stabilized Regression** [(Pfister et al. 2021)](https://arxiv.org/abs/1911.01850), but implements a different algorithm, **Stochastic Stepwise Variable Selection (ST2)** [(Xin et al. 2012)](https://www.tandfonline.com/doi/abs/10.1080/10618600.2012.679223), to discern stability, since the original algorithm is slow and inacurrate when applied to large scale data. We made further modification on the ST2 algorithm to improve computational efficiency, and proposed a new statistical concept called **pseudo-predictor** that adds on intuitive and accurate benchmark of ST2 selections. 
 
+![haha](./figures/intro figure.png)
+
 ## StableMate analysis
 Go to the [analysis](./analysis) folder for the code and data used in [Deng et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1). 
 
