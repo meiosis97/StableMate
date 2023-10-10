@@ -428,7 +428,8 @@ legend(x = "bottomright",
        cex = 1)                 
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- --> Prediction
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+Prediction
 made by the ensemble trained with predictive and stable predictors
 (annotated as *Stable ensemble* in the plot) show least deviance from
 the actual value of the response.
