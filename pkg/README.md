@@ -541,8 +541,10 @@ selection. The default objective function for stability selection is
 Supplementary Method 7.2 in [our
 manuscript](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1.full)
 for details.
-The following two functions is not necessary if the goal
+
+The following two functions are not necessary if the goal
 is not to make new predictions.
+
 - **Regression function**: the function
 that builds regression model given a set of selected predictors. In our
 testing example, our default regression function *reg\_ols* is linear
