@@ -527,7 +527,8 @@ problems. Our flexibility is achieved by allowing three functions in the
 core of the *st2e* algorithm for users to define, while providing
 defaults of the functions for immediate implementation.
 
-These three functions are: -**Objective function**: the function that
+These three functions are: 
+- **Objective function**: the function that
 calculates the objective score of a given set of variables. ST2 will
 search for the set that minimize the objective score. In our testing
 example [Stochastic stepwise variable selection
@@ -539,15 +540,17 @@ selection. The default objective function for stability selection is
 *obj\_pss* that calculates prediction sum of squares (refer to
 Supplementary Method 7.2 in [our
 manuscript](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1.full)
-for details. - The following two functions is not necessary if the goal
-is not to make new predictions. -**Regression function**: the function
+for details.
+The following two functions is not necessary if the goal
+is not to make new predictions.
+- **Regression function**: the function
 that builds regression model given a set of selected predictors. In our
 testing example, our default regression function *reg\_ols* is linear
-regression, which returns regression coefficients \(\hat{\beta}\). -
--**Prediction function**: the function that makes prediction given data
+regression, which returns regression coefficients \(\hat{\beta}\).
+- **Prediction function**: the function that makes prediction given data
 and a regression model build with the defined regression function. In
 our testing example, our default prediction function *pred\_ols*
-performs matrix multiplication \(\hat{Y} = X\hat{\beta}\).-
+performs matrix multiplication \(\hat{Y} = X\hat{\beta}\).
 
 Here we do not elaborate on how these functions are defined (but it will
 be done in the future). However, we believe that an experienced R user
