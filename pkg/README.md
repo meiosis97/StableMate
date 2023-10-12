@@ -519,7 +519,7 @@ system.time(
 *stablemate* achieves a similar running time as the previous test run on
 the simulated data of 50 predictors.
 
-## Custom your own ST2 algorithm
+## Customize your own ST2 algorithm
 
 StableMate provides a computational framework that can be flexibly
 customized for users’ specific regression and variable selection
@@ -614,7 +614,7 @@ system.time(
     ##    user  system elapsed 
     ##    6.87    0.08   88.93
 
-To make prediction based on the logistic models trained in *stablemate*,
+To make prediction based on logistic models trained in *stablemate*,
 we also use the *predict* function defined for the *stablemate* object
 class, but we need to provide the alternative prediction function
 *pred\_logit* to define how does logistic model make prediction.
