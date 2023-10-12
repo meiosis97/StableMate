@@ -364,7 +364,7 @@ st2e <- function(Y, X, env = NULL,
     ensemble <- do.call(rbind, lapply(res, function(x) x$sel))
     colnames(ensemble) <- pred_names
     scores <- do.call(c, lapply(res, function(x) x$score))
-    models <-  if(ret_mod) do.call(c,lapply(res, function(x) x$model)) else NULL
+    models <-  if(ret_mod) do.call(c, lapply(res, function(x) x$model)) else NULL
     if(do_rand_start) start_set <- do.call(rbind, lapply(res, function(x) x$start)) %>% Matrix::Matrix()
     if(par_method == 'SNOW') parallel::stopCluster(cl)
     
@@ -937,16 +937,16 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   
   
   ################ Calculate the importance scores of the predictors selected by st2e_obj  ################ 
-  # Calculate the marginal importance scores of the predictors selected by st2e_obj
+  # Calculate the joint importance scores of the predictors selected by st2e_obj
   # (In stablemate, its a measure of stability and predictivity of predictors,
   # refer to Supplementary Methods 7.1.3 eq.(7))
   sel_imp <- colSums(st2e_obj$ensemble*q_sel)/q_sel_sum
-  # Set up the matrix for storing the bootstrapped marginal importance scores in st2e_obj
+  # Set up the matrix for storing the bootstrapped joint importance scores in st2e_obj
   bt_sel_imp <- matrix(0, nrow=B, ncol= P)
   colnames(bt_sel_imp) <- pred_names
   
   # Calculate prior importance scores of the predictors selected by st2e_obj,
-  # which are also the marginal importance scores of the predictors selected by st2e_obj2
+  # which are also the joint importance scores of the predictors selected by st2e_obj2
   # (In stablemate, its a measure of predictivity of predictors,
   # refer to Supplementary Methods 7.1.3 eq.(8))
   prior_imp <- colSums(st2e_obj$pred_pool*q_sel2)/q_sel_sum2
@@ -986,13 +986,13 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   
   ################ Calculate the importance scores of the predictors selected by st2e_obj2  ################ 
   if(!is.null(st2e_obj2)){
-    # Calculate the marginal importance scores of the predictors selected by st2e_obj2
+    # Calculate the joint importance scores of the predictors selected by st2e_obj2
     sel_imp2 <- prior_imp
     
     if(!matched_psd){
-      # Adjust the marginal importance score of the pseudo-predictor in st2e_obj2
+      # Adjust the joint importance score of the pseudo-predictor in st2e_obj2
       sel_imp2[1] <- sum(st2e_obj2$ensemble[,1]*q_sel2)/q_sel_sum2
-      # Adjust the marginal importance score of the pseudo-predictor in st2e_obj
+      # Adjust the joint importance score of the pseudo-predictor in st2e_obj
       sel_imp[1] <- sum(st2e_obj2$ensemble[,1]*st2e_obj$ensemble[,1]*q_sel)/q_sel_sum
       
     }
@@ -1001,7 +1001,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     # on the predictor pools of st2e_obj2 if st2e_obj2 is given
     prefilt_imp <- colSums(st2e_obj2$pred_pool*q_prefilt)/q_prefilt_sum 
     
-    # Set up the matrix for storing the bootstrapped marginal importance scores in st2e_obj2
+    # Set up the matrix for storing the bootstrapped joint importance scores in st2e_obj2
     bt_sel_imp2 <- matrix(0, nrow=B, ncol= P)
     colnames(bt_sel_imp2) <- pred_names
     
@@ -1033,7 +1033,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   
   
   ################ Scale the importance scores of the pseudo-predictor ################ 
-  # Scale the prior and the marginal importance scores of the pseudo-predictor if the pre-filtering process 
+  # Scale the prior and the joint importance scores of the pseudo-predictor if the pre-filtering process 
   # cannot apply proper selections on the pseudo-predictor. Assume that all the selections in the ensemble
   # were applied with the same stochastic pre-filtering procedure, and assume that the pseudo-predictor is
   # included in all the predictor pools
@@ -1044,7 +1044,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
       # Calculate how many predictors were retained in average across the ensemble after pre-filtering
       avg_pool_size <- floor(mean(pool_sizes))
       # Check whether the pseudo-predictor is included in all the predictor pools
-      if(!all(st2e_obj2$pred_pool[,1] == 1)) warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj2. The calculation of marginal importance may be invalid.")
+      if(!all(st2e_obj2$pred_pool[,1] == 1)) warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj2. The calculation of joint importance may be invalid.")
       
       # The importance score of the pseudo-predictor will be multiplied by the avg_pool_size(th) largest importance score
       # in pre-filtering 
@@ -1053,7 +1053,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
       sel_imp2[1] <- sel_imp2[1] * s
       
     }else{
-      if(!all(st2e_obj$pred_pool[,1] == 1)) warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj. The calculation of marginal importance may be invalid.")
+      if(!all(st2e_obj$pred_pool[,1] == 1)) warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj. The calculation of joint importance may be invalid.")
       pool_sizes <-rowSums(st2e_obj$pred_pool[,-1])
       avg_pool_size <- floor(mean(pool_sizes))
       s <- sort(prior_imp[-1], decreasing = T)[avg_pool_size]
@@ -1079,7 +1079,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     q_sel_sum <- sum(q_sel)
     q_sel_sum2 <- sum(q_sel2)
     
-    # Bootstrapped marginal importance scores
+    # Bootstrapped joint importance scores
     bt_sel_imp[b,] <- colSums(st2e_obj$ensemble[k,]*q_sel)/q_sel_sum
     # Bootstrapped prior importance scores
     bt_prior_imp <- colSums(st2e_obj$pred_pool[k,]*q_sel2)/q_sel_sum2
@@ -1090,12 +1090,12 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     if(per_pred_evl) benchmark[b,] <- colSums(mask_mat[k,]*q_sel)/q_sel_sum/bt_prior_imp
     
     if(!is.null(st2e_obj2)){
-      # Bootstrapped marginal importance scores in st2e_obj2
+      # Bootstrapped joint importance scores in st2e_obj2
       bt_sel_imp2[b,] <- bt_prior_imp
       if(!matched_psd){
-        # Adjust the bootstrapped marginal importance score of the pseudo-predictor in st2e_obj2
+        # Adjust the bootstrapped joint importance score of the pseudo-predictor in st2e_obj2
         bt_sel_imp[b,1] <- sum(st2e_obj2$ensemble[k,1]*st2e_obj$ensemble[k,1]*q_sel)/q_sel_sum
-        # Adjust the bootstrapped marginal importance score of the pseudo-predictor in st2e_obj2
+        # Adjust the bootstrapped joint importance score of the pseudo-predictor in st2e_obj2
         bt_sel_imp2[b,1]  <- sum(st2e_obj2$ensemble[k,1]*q_sel2)/q_sel_sum2
         
       }
@@ -1126,15 +1126,15 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   }
   
   
-  ################ Calculate significance of marginal importance  ################ 
-  # For a true predictor, calculate how often it obtains higher (lower) marginal importance scores 
+  ################ Calculate significance of joint importance  ################ 
+  # For a true predictor, calculate how often it obtains higher (lower) joint importance scores 
   # than the pseudo-predictor over the bootstrap iteration
   bt_sel_imp <- Matrix::Matrix(bt_sel_imp)
   significance <- colMeans(bt_sel_imp > bt_sel_imp[,1]) 
   lt_significance <- colMeans(bt_sel_imp < bt_sel_imp[,1])
   
-  marginal <- list(importance = sel_imp, bt_imp = bt_sel_imp, 
-                   significance = significance, lt_significance = lt_significance)
+  joint <- list(importance = sel_imp, bt_imp = bt_sel_imp, 
+                significance = significance, lt_significance = lt_significance)
   
   
   ################ Calculate significance of conditional importance  ################
@@ -1163,17 +1163,17 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
                       benchmark = benchmark, significance = significance, lt_significance = lt_significance)
   
   # Store results in the imp_score slot of the ST2E object
-  st2e_obj$imp_scores <- list(marginal = marginal, conditional = conditional)
+  st2e_obj$imp_scores <- list(joint = joint, conditional = conditional)
   
   ################ Similar calculation of significance in st2e_obj2 ################
   if(!is.null(st2e_obj2)){
-    # Marginal
+    # Joint
     bt_sel_imp2 <- Matrix::Matrix(bt_sel_imp2)
     significance <- colMeans(bt_sel_imp2 > bt_sel_imp2[,1]) 
     lt_significance <- colMeans(bt_sel_imp2 < bt_sel_imp2[,1])
     
-    marginal2 <- list(importance = sel_imp2, bt_imp = bt_sel_imp2, 
-                      significance = significance, lt_significance = lt_significance)
+    joint2 <- list(importance = sel_imp2, bt_imp = bt_sel_imp2, 
+                   significance = significance, lt_significance = lt_significance)
     
     # Conditional
     condi_imp2[is.na(condi_imp2)] <- 0
@@ -1195,7 +1195,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     conditional2 <- list(importance = condi_imp2, bt_imp = bt_condi_imp2,
                          benchmark = benchmark2, significance = significance, lt_significance = lt_significance)
     
-    st2e_obj2$imp_scores <- list(marginal = marginal2, conditional = conditional2)
+    st2e_obj2$imp_scores <- list(joint = joint2, conditional = conditional2)
     
     list(st2e_obj, st2e_obj2)
     
@@ -1208,7 +1208,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
 
 
 # Print out the st2e selection
-print.st2e<- function(st2e_obj, imp_type = c('conditional','marginal'), sigthresh = 1-exp(-5)){
+print.st2e<- function(st2e_obj, imp_type = c('conditional','joint'), sigthresh = 1-exp(-5)){
   cat('----------------------------------------------------\n')
   cat("Summary of the objective scores of selections in the ensemble:\n")
   print(summary(st2e_obj$obj_scores))
@@ -1248,8 +1248,8 @@ print.st2e<- function(st2e_obj, imp_type = c('conditional','marginal'), sigthres
 
 
 # Print out the stablemate selection
-print.stablemate <- function(stbm_obj, pred_imp_type = c('marginal','conditional'), 
-                             stab_imp_type = c('conditional','marginal'),  sigthresh = 1-exp(-5)){
+print.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'), 
+                             stab_imp_type = c('conditional','joint'),  sigthresh = 1-exp(-5)){
   
   # Print out predictors selected as predictive
   cat('----------------------------------------------------\n')
@@ -1347,7 +1347,7 @@ print.stablemate <- function(stbm_obj, pred_imp_type = c('marginal','conditional
 
 
 # Plot out the st2e selection
-plot.st2e <- function(st2e_obj, imp_type = c('conditional','marginal'), 
+plot.st2e <- function(st2e_obj, imp_type = c('conditional','joint'), 
                       fill_by = NULL, colors = NULL, sigthresh = 1-exp(-5),
                       plot_density = FALSE, bt_prop = 0.1, base_size = 15,
                       show_labels = TRUE, labels = NULL, label_size = 10, box_size = 0.1){
@@ -1455,7 +1455,7 @@ plot.st2e <- function(st2e_obj, imp_type = c('conditional','marginal'),
       ggplot2::geom_col(ggplot2::aes(x = pred_names, y = imp_obj$importance[-1], fill = fill_by), size = box_size)+
       ggplot2::geom_hline(yintercept = imp_obj$importance[1], linetype = 'dashed') +
       ggplot2::xlab('Predictors') + 
-      if(imp_type == 'conditional') ggplot2::ylab('Conditional mportance scores') else ggplot2::ylab('Marginal importance scores')
+      if(imp_type == 'conditional') ggplot2::ylab('Conditional mportance scores') else ggplot2::ylab('Joint importance scores')
     
     
     ############### Code for color tuning ############### 
@@ -1500,8 +1500,8 @@ plot.st2e <- function(st2e_obj, imp_type = c('conditional','marginal'),
 
 
 # Plot out the stablemate selection
-plot.stablemate <- function(stbm_obj, pred_imp_type = c('marginal','conditional'), 
-                            stab_imp_type = c('conditional','marginal'),
+plot.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'), 
+                            stab_imp_type = c('conditional','joint'),
                             sigthresh = 1-exp(-5),
                             color_by = NULL, colors = NULL,
                             base_size = 15, point_size  = 2,
@@ -1784,11 +1784,10 @@ lasso_prefilt <- function(Y, X, p, env = NULL, K = 100, ncore = NULL, drop_pred 
     # Define sample weights
     if(group_by != 'none'){
       w <- 1/(table(group[idx])[group[idx]]) 
-      w <- w/sum(w)*n
+      w <- as.numeric(w/sum(w)*n)
       
       # Run Lasso on subsampled data
       suppressWarnings(mod <- glmnet::glmnet(X[idx,], Y[idx], weights = w, ...))
-      
     }else{
       suppressWarnings(mod <- glmnet::glmnet(X[idx,], Y[idx], ...))
       
