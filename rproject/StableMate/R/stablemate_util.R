@@ -1,3 +1,18 @@
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Exported
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#' print function for \code{stablemate} object.
+#'
+#' @param stbm_obj A \code{stablemate} object returned by \code{\link[StableMate]{stablemate}}.
+#' @param pred_imp_type Either 'conditional' or 'joint' to make predictive feature selections
+#' based on conditional importance scores or joint importance scores.
+#' @param stab_imp_type Either 'conditional' or 'joint' to make stable feature selections
+#' based on conditional importance scores or joint importance scores.
+#' @param sigthresh Numerical; Significance threshold.
+#' @export
+#'
+#' @method print stablemate
+#' @rdname print.stablemate
 print.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'),
                              stab_imp_type = c('conditional','joint'),  sigthresh = 1-exp(-5)){
 
@@ -96,6 +111,33 @@ print.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'),
 }
 
 
+#' plot function for \code{stablemate} object.
+#'
+#' @param stbm_obj A \code{stablemate} object returned by \code{\link[StableMate]{stablemate}}.
+#' @param pred_imp_type Either 'conditional' or 'joint' to show conditional importance scores
+#' or joint importance scores on predictive feature selections.
+#' @param stab_imp_type Either 'conditional' or 'joint' to show conditional importance scores
+#' or joint importance scores on stable feature selections.
+#' @param sigthresh Numerical; Significance threshold.
+#' @param color_by User provided coloring, should be a data frame of the same row length as the column size of the ensemble (exclude the pseudo-predictor),
+#' Rows should be labelled by predictor names. The column name will be used as the legend title.
+#' @param colors A vector of color values passed to \code{\link[ggplot]{scale_color_manual}}.
+#' @param plot_density Logical; If TRUE, bootstrap density of importance scores will be shown.
+#' @param bt_prop Numerical; Proportion of bootstrap importance scores to show. Should be a value between 0 and 1.
+#' @param base_size base_size passed to \code{\link[ggplot]{theme_classic}} .
+#' @param point_size \code{\link[ggplot]{geom_point}} size aesthetic.
+#' @param show_labels Logical; If TRUE, show labels of predictors by \code{\link[ggrepel]{geom_text_repel}}.
+#' @param labels User provided x label, It should be a vector named by the predictor names.
+#' @param label_size \code{\link[ggrepel]{geom_text_repel}} size aesthetic.
+#' @param parse Logical; If TRUE, phrase rich-text expressions passed to \code{labels}.
+#' @param pred_cutoff; A numerical between 0 and 1. Predictors with predictivity scores larger than
+#' \code{pred_cutoff} will be colored and labelled.
+#' @param show_density_of A character vector of names of predictors to show bootstrap importance density of.
+#'
+#' @export
+#'
+#' @method plot stablemate
+#' @rdname plot.stablemate
 plot.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'),
                             stab_imp_type = c('conditional','joint'),
                             sigthresh = 1-exp(-5),
@@ -342,6 +384,22 @@ plot.stablemate <- function(stbm_obj, pred_imp_type = c('joint','conditional'),
 }
 
 
+#' predict function for \code{stablemate} object.
+#'
+#' @param stbm_obj A \code{stablemate} object returned by \code{\link[StableMate]{stablemate}}.
+#' @param X New predictor data that can be recognized by \code{st2e} regression models fitted by the \code{reg_fun} argument passed to \code{\link[StableMate]{st2e}}.
+#' @param assay Either 'stable_ensemble' or 'prediction_ensemble'
+#' @param prune Logical; If TRUE, weight selections by ranking quantiles of their objective scores when aggregating regression models.
+#' @param prefilt_scores A numerical vector that contains some weighting measurements of predictor pools. Predictor pools will be
+#' weighted by ranking quantiles of \code{prefilt_scores} when aggregating regression models.
+#' @param pred_fun The function that makes prediction on the response given new predictor data \code{X} and regression models
+#' in \code{st2e}. By default, expect regression models fitted by code{\link[StableMate]{reg_ols}}.
+#' See \code{\link[StableMate]{reg_fun}} for more options and how to customize this function.
+#'
+#' @export
+#'
+#' @method predict stablemate
+#' @rdname predict.stablemate
 predict.stablemate <- function(stbm_obj, X, assay = c('stable_ensemble','prediction_ensemble'),
                                prune = TRUE, prefilt_scores = NULL, pred_fun = pred_ols){
   assay <- match.arg(assay)

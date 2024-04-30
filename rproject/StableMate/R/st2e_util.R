@@ -1,17 +1,18 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Exported
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#' show function for \code{st2e} object.
+#' print function for \code{st2e} object.
 #'
 #' @param st2e_obj A \code{st2e} object returned by \code{\link[StableMate]{st2e}}.
-#' @param imp_type Either 'conditional' or 'joint' to make selection based on conditional importance scores
+#' @param imp_type Either 'conditional' or 'joint' to make selections based on conditional importance scores
 #' or joint importance scores.
-#' @param sigthresh Numerical; significance threshold.
+#' @param sigthresh Numerical; Significance threshold.
 #'
 #' @export
 #'
+#' @method print st2e
 #' @rdname print.st2e
-print.st2e<- function(st2e_obj, imp_type = c('conditional','joint'), sigthresh = 1-exp(-5)){
+print.st2e <- function(st2e_obj, imp_type = c('conditional','joint'), sigthresh = 1-exp(-5)){
   cat('----------------------------------------------------\n')
   cat("Summary of the objective scores of selections in the ensemble:\n")
   print(summary(st2e_obj$obj_scores))
@@ -54,21 +55,22 @@ print.st2e<- function(st2e_obj, imp_type = c('conditional','joint'), sigthresh =
 #'
 #' @param st2e_obj A \code{st2e} object returned by \code{\link[StableMate]{st2e}}.
 #' @param imp_type Either 'conditional' or 'joint' to show conditional importance scores
-#' and or importance scores.
+#' or joint importance scores.
 #' @param fill_by User provided filling, should be a data frame of the same row length as the column size of the ensemble (exclude the pseudo-predictor),
 #' Rows should be labelled by predictor names. The column name will be used as the legend title.
 #' @param colors A vector of color values passed to \code{\link[ggplot]{scale_fill_manual}} and \code{\link[ggplot]{scale_color_manual}}.
-#' @param sigthresh Numerical; significance threshold.
-#' @param plot_density Logical; If true, bootstrap density of importance scores will be shown.
+#' @param sigthresh Numerical; Significance threshold.
+#' @param plot_density Logical; If TRUE, bootstrap density of importance scores will be shown.
 #' @param bt_prop Numerical; Proportion of bootstrap importance scores to show. Should be a value between 0 and 1.
 #' @param base_size base_size passed to \code{\link[ggplot]{theme_classic}} .
-#' @param show_labels Logical; If true, show labels of predictors on x-axis.
+#' @param show_labels Logical; If TRUE, show labels of predictors on x-axis.
 #' @param labels User provided x label, It should be a vector named by the predictor names.
 #' @param label_size label_size will be passed to \code{\link[ggplot]{element_text}} to control x axis label size.
 #' @param box_size \code{\link[ggplot]{geom_boxplot}} size aesthetic.
 #'
 #' @export
 #'
+#' @method plot st2e
 #' @rdname plot.st2e
 plot.st2e <- function(st2e_obj, imp_type = c('conditional','joint'),
                       fill_by = NULL, colors = NULL, sigthresh = 1-exp(-5),
@@ -226,7 +228,7 @@ plot.st2e <- function(st2e_obj, imp_type = c('conditional','joint'),
 #'
 #' @param st2e_obj A \code{st2e} object returned by \code{\link[StableMate]{st2e}}.
 #' @param X New predictor data that can be recognized by \code{st2e} regression models fitted by the \code{reg_fun} argument passed to \code{\link[StableMate]{st2e}}.
-#' @param prune Logical; If TRUE, weight selections by ranking quantiles of their objective scores aggregating regression models.
+#' @param prune Logical; If TRUE, weight selections by ranking quantiles of their objective scores when aggregating regression models.
 #' @param prefilt_scores A numerical vector that contains some weighting measurements of predictor pools. Predictor pools will be
 #' weighted by ranking quantiles of \code{prefilt_scores} when aggregating regression models.
 #' @param pred_fun The function that makes prediction on the response given new predictor data \code{X} and regression models
@@ -235,6 +237,7 @@ plot.st2e <- function(st2e_obj, imp_type = c('conditional','joint'),
 #'
 #' @export
 #'
+#' @method predict st2e
 #' @rdname predict.st2e
 predict.st2e <- function(st2e_obj, X, prune = TRUE, prefilt_scores = NULL, pred_fun = pred_ols){
   K <- nrow(st2e_obj$ensemble)

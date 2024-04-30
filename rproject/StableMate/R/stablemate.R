@@ -46,7 +46,6 @@
 #' @return A \code{stablemate} object.
 #'
 #' @export
-#' @name stablemate
 #' @rdname stablemate
 stablemate <- function(Y, X, env, K = 100,
                        alpha = 1, beta = 5, lambda = 0.5, a = 1, b = 1, t = 0, max_size = NULL,

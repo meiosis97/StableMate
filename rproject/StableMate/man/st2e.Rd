@@ -138,7 +138,7 @@ all possible unique proposal that can be made.}
 
 \item{ret_imp}{Logical; If true, return the importance score.}
 
-\item{calc_imp_ctrl}{A list that controls importance score calculation. See the document of \code{calc_imp} for details.}
+\item{calc_imp_ctrl}{A list that controls importance score calculation. See the document of \code{\link[StableMate]{calc_imp}} for details.}
 
 \item{ncore}{Numerical; Numerical; If greater than 0. Parallel computing is enabled.}
 
@@ -146,9 +146,9 @@ all possible unique proposal that can be made.}
 
 \item{chunk_size}{Numerical; The size of task chunks (How many st2 runs are performed one each task).}
 
-\item{fun_export}{A vector of names of functions to be imported by \code{foreach} environment.}
+\item{fun_export}{A vector of names of functions to be imported by \code{\link[foreach]{foreach}} environment.}
 
-\item{pkg_export}{A vector of names of packages to be imported by \code{foreach} environment.}
+\item{pkg_export}{A vector of names of packages to be imported by \code{\link[foreach]{foreach}} environment.}
 
 \item{drop_pred}{Logical; If true, remove predictors from X that are not in the predictor pool to save space and time.}
 
