@@ -50,7 +50,7 @@ environments. Each environment contains 300 samples.
 sim_out <- sim_scm()
 ```
 
-![](figure/unnamed-chunk-3-1.png)
+![](vignettes/figure/unnamed-chunk-3-1.png)
 
 ``` r
 str(sim_out)
@@ -153,7 +153,7 @@ practice. We can also visualize selections by
 plot(mod_st2e) 
 ```
 
-![](figure/unnamed-chunk-8-1.png)
+![](vignettes/figure/unnamed-chunk-8-1.png)
 
 The black dashed line is the selection importance score of the
 pseudo-predictor. If a true predictor is selected more often than the
@@ -295,7 +295,7 @@ And again we can visualize selections by
 plot(mod_stbm) 
 ```
 
-![](figure/unnamed-chunk-12-1.png)
+![](vignettes/figure/unnamed-chunk-12-1.png)
 
 The vertical dashed lines correspond to the (0.025, 0.975) bootstrap
 quantile of the predictivity score (selection importance score in the
@@ -316,7 +316,7 @@ the y-axis by changing the *stab_imp_type* argument of *stablemate*
 plot(mod_stbm, stab_imp_type = 'joint') 
 ```
 
-![](figure/unnamed-chunk-13-1.png)
+![](vignettes/figure/unnamed-chunk-13-1.png)
 
 These joint importance scores are better measurement of the overall
 goodness of predictors in constructing prediction models.
@@ -360,7 +360,7 @@ legend(x = "bottomright",
        cex = 1)                 
 ```
 
-![](figure/unnamed-chunk-14-1.png)
+![](vignettes/figure/unnamed-chunk-14-1.png)
 
 Prediction made by the ensemble trained with predictive and stable
 predictors (annotated as *Stable ensemble* in the plot) show least
@@ -398,7 +398,7 @@ containing 500 predictors
 sim_out <- sim_scm(nNode = 500, nI = 250, propE = 0.01, idxY = 250)
 ```
 
-![](figure/unnamed-chunk-16-1.png)
+![](vignettes/figure/unnamed-chunk-16-1.png)
 
 ``` r
 str(sim_out)
@@ -648,4 +648,4 @@ Yhat_stab <- predict(mod_stbm, X, pred_fun = pred_logit)
 plot(Yhat_stab, y, xlab = 'Predicted probability of being 1', ylab = 'Y (binary class 1 or 0)')
 ```
 
-![](figure/unnamed-chunk-24-1.png)
+![](vignettes/figure/unnamed-chunk-24-1.png)
