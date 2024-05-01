@@ -128,6 +128,10 @@ lasso_prefilt <- function(Y, X, p, env = NULL, K = 100, ncore = NULL, drop_pred 
 
     }else{
       ############### Run st2e with MPI ###############
+      if(!"doMPI" %in% installed.packages()[,1]){
+        stop("Package doMPI not detected. Please install from CRAN before running lasso_prefilt.")
+      }
+
       # MPI should be used when running on a HPC cluster, and
       # should be ran together with command line mpirun in shell scripts.
       if(is.null(doMPI::getDoMpiCluster())){

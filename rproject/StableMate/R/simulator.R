@@ -19,9 +19,14 @@
 #'
 #' @rdname sim_scm
 sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idxY = 25){
-  require(gmat)
-  require(igraph)
-  require(Matrix)
+  if(!"gmat" %in% installed.packages()[,1]){
+    stop("Package gmat not detected. Please install with \n    remotes::install_github('gherardovarando/gmat')")
+  }
+
+  if(!"igraph" %in% installed.packages()[,1]){
+    stop("Package igraph not detected. Please install from CRAN before running st2e.")
+  }
+
   idxSb = NULL
   idxMb= NULL
   while(length(idxSb)==0 | length(idxSb) == length(idxMb)){
@@ -29,7 +34,7 @@ sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idx
     propE <- propE # Proportion of edges being connected
     nI <- nI # Number of intervention
 
-    dag <- rgraph(nNode, propE, dag = T, ordered = TRUE) # Sample a random graph of 50 variables
+    dag <- gmat::rgraph(nNode, propE, dag = T, ordered = TRUE) # Sample a random graph of 50 variables
     mat <- igraph::as_adjacency_matrix(dag) # Extract the adjacency matrix of the graph
     mat <- rbind(matrix(ncol = nNode, nrow = nI,0),mat) # Expand the adjacency matrix by including interventions
     mat <- cbind(matrix(ncol = nI, nrow = nrow(mat),0),mat)
@@ -40,7 +45,7 @@ sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idx
     idxX <- (1:nNode)[-c(1:nI,idxY)] # Set the id of the predictors
     idxItv <- sample(idxX, nI) # Randomly chose predictors to intervene, the chosen predictors' id are recorded
     for(i in 1:nI) mat[i,idxItv[i]] = 1 # Adjust the adjacency matrix accordingly by connecting interventions with their targeted predictors
-    dag <- graph_from_adjacency_matrix(mat) # Create a graph from the expanded adjancency matrix
+    dag <- igraph::graph_from_adjacency_matrix(mat) # Create a graph from the expanded adjancency matrix
 
     # Classify nodes
 
@@ -65,7 +70,7 @@ sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idx
     idxChItvDec <- c()
     if(length(idxChItv)>0){
 
-      for(i in idxChItv) idxChItvDec <- c(idxChItvDec,subcomponent(dag,i, mode = 'out')) # For each intervened child, find its descendants
+      for(i in idxChItv) idxChItvDec <- c(idxChItvDec,igraph::subcomponent(dag,i, mode = 'out')) # For each intervened child, find its descendants
       idxChItvDec <- unique(idxChItvDec)
 
     }

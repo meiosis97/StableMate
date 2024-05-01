@@ -371,6 +371,10 @@ st2e <- function(Y, X, env = NULL,
       ############### Run st2e with MPI ###############
       # MPI should be used when running on a HPC cluster, and
       # should be ran together with command line mpirun in shell scripts.
+      if(!"doMPI" %in% installed.packages()[,1]){
+        stop("Package doMPI not detected. Please install from CRAN before running st2e.")
+      }
+
       if(is.null(doMPI::getDoMpiCluster())){
         cl <- doMPI::startMPIcluster(ncore)
         doMPI::registerDoMPI(cl)

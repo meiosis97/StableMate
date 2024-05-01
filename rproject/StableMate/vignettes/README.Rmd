@@ -1,11 +1,13 @@
 ---
-title: "A introduction to StableMate (developing version)"
-output: github_document
+title: "A introduction to StableMate"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A introduction to StableMate}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Before we start
 
@@ -16,7 +18,8 @@ The proper R package is under development, and it will be released soon. **But w
 ## Setup 
 StableMate requires loading the R package *StableMate* to the global environment.
 
-```{r, eval = T}
+
+```r
 library(StableMate)
 ```
 
@@ -27,9 +30,33 @@ We demonstrate the usage of StableMate using simulated datasets. **So this secti
 
 Here we simulate systems of one response, 49 predictors under four environments. Each environment contains 300 samples. 
 
-```{r, eval = T, message= F, warning = F}
+
+```r
 sim_out <- sim_scm()
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+
+```r
 str(sim_out)
+```
+
+```
+## List of 8
+##  $ trainX: num [1:900, 1:49] -10.8 -10.4 -10.7 -10.9 -10.7 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:49] "X31" "X32" "X33" "X34" ...
+##  $ trainY: num [1:900] -0.417 -0.261 0.294 2.409 1.929 ...
+##  $ testX : num [1:300, 1:49] 3.05 3.48 2.56 3.9 2.52 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:49] "X31" "X32" "X33" "X34" ...
+##  $ testY : num [1:300] -43.3 -46.2 -47.6 -46 -40.5 ...
+##  $ envs  : Factor w/ 3 levels "e1","e2","e3": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ idxMb : int [1:18] 33 34 44 46 53 60 61 64 76 42 ...
+##  $ idxSb : int [1:8] 33 34 44 46 53 60 64 42
+##  $ idxNsb: int [1:10] 61 76 39 41 43 52 32 36 68 71
 ```
 
 The first three environments were treated as training environments, and the last environment was treated as the testing environment. 
@@ -40,7 +67,8 @@ We start by introducing ST2, the algorithm on which variable selection in Stable
 ### A test run of ST2
 Lets try to run ST2 on the simulated data with our function *st2e* (stands for stochastic stepwise variable selection). By default, the objective of *st2e* is to select predictors to minimize Bayesian information criteria of linear models, so the selected predictors are considered as being most predictive. The objective of *st2e* can be changed and be user-defined (We will discuss this later). On the testing data, we run *st2e* with one liner to build a ensemble of size 100. The larger the ensemble, the more certain we are at the final selection:
 
-```{r, eval = T, message = F}
+
+```r
 y <- sim_out$testY
 X <- sim_out$testX
 # Y: response
@@ -53,29 +81,20 @@ system.time(
 
 Selection result is summarized by calling the resulting R object.
 
-```{r, eval = T, message = F}
+
+```r
 mod_st2e
 ```
 
 In theory, the set of predictor that minimizes BIC is the Markov Blank (MB) of the response. From the structural causal model we build, we know which predictors are in MB, and we compare the these (true MB) predictors with the st2e selection
 
-```{r, eval = T, message = F, include=FALSE}
-st2e_selected <- print(mod_st2e)$selected
-true_Mb <- paste('X', sim_out$idxMb, sep = '')
-```
-```{r, echo=FALSE}
-cat('True MB:')
-true_Mb
-cat('Correctly selected:')
-st2e_selected[st2e_selected%in%true_Mb]
-cat('Falsely selected:')
-st2e_selected[!st2e_selected%in%true_Mb]
 
-```
+
 
 *st2e* did not make many selections due to a lack of repetition (small $K$) and hence little confidence. The repetition can be increased in practice. We can also visualize selections by
 
-```{r, eval = T, message = F, fig.width = 10}
+
+```r
 plot(mod_st2e) 
 ```
 
@@ -89,7 +108,8 @@ StableMate supports parallel computing in different types of system environment.
 - Set *par_method* = "MPI" for clusters, or high performance computing.
 
 Since this vignette is written on a WINDOWS PC, we just need to specific *ncore*, whereas *par_method* = "SNOW" is set as the default.
-```{r, eval = T, message = F, fig.width = 10}
+
+```r
 system.time(
   mod_st2e <- st2e(Y = y, X = X, K = 100, ncore = 5)
 )
@@ -105,7 +125,8 @@ As stability is defined with respect to the environment from which data are coll
 ### A test run of StableMate
 Now we run *stablemate* on the training data consisting of 900 samples from three different environments. We directly enable parallel computing to save some time (For details on how to tune parallel computing, refer to the section [Parallel computing]).
 
-```{r, eval = T, message = F}
+
+```r
 y <- sim_out$trainY
 X <- sim_out$trainX
 env <- sim_out$envs
@@ -121,13 +142,15 @@ system.time(
 
 Selection result is summarized again by calling the resulting R object.
 
-```{r, eval = T, message = F}
+
+```r
 mod_stbm 
 ```
 
 And again we can visualize selections by
 
-```{r, eval = T, message = F}
+
+```r
 plot(mod_stbm) 
 ```
 
@@ -135,7 +158,8 @@ The vertical dashed lines correspond to the (0.025, 0.975) bootstrap quantile of
 
 Note that, the stability scores we show here are **conditional**: they measure how stable predictors are conditioning on they are predictive. We can also visualize how **predictive and stable** predictors are on the y-axis by changing the *stab_imp_type* argument of *stablemate*
 
-```{r, eval = T, message = F}
+
+```r
 # stab_imp_type = 'conditional' by default
 # Another option is 'joint'
 plot(mod_stbm, stab_imp_type = 'joint') 
@@ -148,7 +172,8 @@ These joint importance scores are better measurement of the overall goodness of 
 
 As a benchmark, we test prediction made by each type of ensemble as well as by linear regression
 
-```{r, eval = T, message = F}
+
+```r
 testX <- sim_out$testX
 testy <- sim_out$testY
 # assay = 'stable_ensemble' by default
@@ -175,7 +200,8 @@ Prediction made by the ensemble trained with predictive and stable predictors (a
 
 *st2e* object can also make prediction using the *predict* function. *st2e* object only contains a single variable selection ensemble and hence a single regression ensemble. Therefore, there is no option to select which ensemble to predict. 
 
-```{r, eval = F, message = F}
+
+```r
 # This chunk of code is not implemented, just for demonstration purpose
 predict(mod_st2e, testX)
 ```
@@ -187,14 +213,16 @@ Given that we want to build a ensemble of size $K$ using *st2e*, we can first im
 
 We test the usage of *lasso_prefilt* with a larger simulated data set containing 500 predictors
 
-```{r}
+
+```r
 sim_out <- sim_scm(nNode = 500, nI = 250, propE = 0.01, idxY = 250)
 str(sim_out)
 ```
 
 We use *lasso_prefilt* to repeat randomized lasso for 100 times, each time make a selection of 50 predictors. Parallel computing is enabled, and the usage is the same as described in [Parallel computing].
 
-```{r, eval = T, message = F}
+
+```r
 y <- sim_out$trainY
 X <- sim_out$trainX
 env <- sim_out$envs
@@ -211,7 +239,8 @@ head(pred_pool)
 
 *lasso_prefilt* will generate an indicator matrix with columns representing predictors and each row corresponds to a selection result in one run of randomized lasso (1 represents selected, 0 otherwise). Now we can provide this indicator matrix to the *st2e* function.
 
-```{r, eval = F, message = F}
+
+```r
 # This chunk of code is not implemented, just for demonstration purpose.
 # pred_pool: restricting the variable selection space of ST2. Can be a vector of predictor names, or an indicator matrix specifying the predictor pool of each ST2 selection across the size K ensemble.
 mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5, pred_pool = pred_pool)
@@ -219,7 +248,8 @@ mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5, pred_pool = pred_p
 
 *stablemate* runs *st2e* for two times, the first time selects predictive predictors and the second time selects stable predictors within the predictive predictors selected. Each of the two *st2e* run can be controlled by users independently via the *pred_st2_ctrl* and *stab_st2_ctrl* argument of *stablemate*. We define the predictor pool of the first *st2e* in *stablemate* to pre-filter for *stablemate*:
 
-```{r, eval = T, message = F}
+
+```r
 # pred_st2_ctrl: a list used for specifying the control of ST2 in selecting predictive predictors. Available controls are the same as that of st2e function.
 # stab_st2_ctrl: same as pred_st2_ctrl, but specifies the control of ST2 in selecting stable predictors.
 system.time(
@@ -243,7 +273,8 @@ Here we do not elaborate on how these functions are defined (but it will be done
 
 Other than the defaults, we also provide alternative functions *obj_bic_logit*, *reg_logit* and *pred_logit* for logistic regression and binary classification. We show how to run ST2 with these alternative functions in the following chunk of code. We first convert the continuous response we previously simulated in [Dealing with high dimensional data with pre-filtering] to a binary response.
 
-```{r, eval = T, message = F}
+
+```r
 y <- sim_out$trainY
 y <- exp(y)/(1+exp(y))
 y <- as.numeric(runif(length(y)) > y)
@@ -251,7 +282,8 @@ y <- as.numeric(runif(length(y)) > y)
 
 Lasso pre-filtering is then applied.
 
-```{r, eval = T, message = F, warning = F}
+
+```r
 # Any argument of the glmnet function can be passed to lasso_prefilt. Here we specify the distribution family of the response by setting family = 'binomial', which tells glmnet to perform binomial regression for binary classification. 
 system.time(
   pred_pool <- lasso_prefilt(Y = y, X = X, env = env, p = 50, K = 100, ncore = 5, verbose = F,
@@ -261,7 +293,8 @@ system.time(
 
 We run *st2e* to select within the pre-filtered predictors of randomized lasso (i.e, *pred_pool*), and use *obj_bic_logit* to calculate objective scores, use *reg_logit* to build regression models.
 
-```{r, eval = F, message = F}
+
+```r
 # This chunk of code is not implemented, just for demonstration purpose.
 # reg_fun: the regression function fitted on selected predictors.
 # obj_fun: the objective function of variable selection.
@@ -271,7 +304,8 @@ mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5,
 
 *stablemate* can be implemented with customized objective function and regression function by controlling its internal *st2e* runs as what we done in [Dealing with high dimensional data with pre-filtering]. We provide an alternative objective function *obj_pss_logit* to select stable predictors for logistic regression.  
 
-```{r, eval = T, message = F}
+
+```r
 system.time(
   mod_stbm <- stablemate(Y = y, X = X, env = env, K = 100, ncore = 5,
                          pred_st2_ctrl = list(reg_fun = reg_logit, obj_fun = obj_bic_logit,
@@ -283,7 +317,8 @@ system.time(
 
 To make prediction based on the logistic models trained in *stablemate*, we also use the *predict* function defined for the *stablemate* object class, but we need to provide the alternative prediction function *pred_logit* to define how does logistic model make prediction. 
 
-```{r, eval = T, message = F}
+
+```r
 # pred_fun: the function that makes prediction given data and a trained regression model.
 Yhat_stab <- predict(mod_stbm, X, pred_fun = pred_logit) 
 plot(Yhat_stab, y, xlab = 'Predicted probability of being 1', ylab = 'Y (binary class 1 or 0)')

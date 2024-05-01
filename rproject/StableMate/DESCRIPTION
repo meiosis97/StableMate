@@ -1,12 +1,38 @@
 Package: StableMate
 Type: Package
-Title: What the Package Does (Title Case)
+Title: StableMate: stabilized regression via stochastic stepwise variable selection ensemble.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Yidi Deng
+Maintainer: Yidi Deng <yidid@student.unimelb.edu.au>
+Description: StableMate (Deng et al.2023) is a regression and variable selection framework in a multi-environment 
+    regression setting. Given a response, StableMate distinguish between stable and unstable predictors that have 
+    consistent or changing functional dependencies (e.g, fitted regression models) on the response across environments, 
+    respectively. Stable predictors entile strong causal implication and can be selected to enforce generalizability of regression models. 
+    Unstable predictors (which we refered to as environment-specific predictors in our manuscript) 
+    reveals the impact of environment pertubation on the studied system of predictors and response.
+    StableMate is built based on the theoretical foundation of Stabilized Regression (Pfister et al. 2021), 
+    but implements a different algorithm, Stochastic Stepwise Variable Selection (ST2) (Xin et al. 2012), to discern stability, 
+    since the original algorithm is slow and inacurrate when applied to large scale data. We made further modification on the 
+    ST2 algorithm to improve computational efficiency, and proposed a new statistical concept called pseudo-predictor that adds on intuitive and 
+    accurate benchmark of ST2 selections.
+License: None
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
+Imports: 
+    Matrix,
+    dplyr,
+    doParallel,
+    ggplot2,
+    reshape2,
+    ggrepel,
+    MASS,
+    progress,
+    arm
+Suggests:
+    doMPI,
+    gmat,
+    igraph,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
