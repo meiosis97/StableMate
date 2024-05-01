@@ -173,7 +173,15 @@ lasso_prefilt <- function(Y, X, p, env = NULL, K = 100, ncore = NULL, drop_pred 
   if(drop_pred) lasso_sel <- lasso_sel[,colSums(lasso_sel)>0]
   lasso_sel <- cbind(pseudo_predictor = 1, lasso_sel)
   lasso_sel <- Matrix::Matrix(lasso_sel)
-  attributes(lasso_sel)$stbm_lasso <- "TRUE"
+
+  setClass(Class = "lasso_ensemble",
+      contains = class(lasso_sel),
+      where = environment()
+  )
+
+  lasso_sel <- as(lasso_sel, "lasso_ensemble")
+
   lasso_sel
 
 }
+

@@ -29,6 +29,7 @@ sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idx
 
   idxSb = NULL
   idxMb= NULL
+  idxY.default <- idxY
   while(length(idxSb)==0 | length(idxSb) == length(idxMb)){
     { nNode <- nNode # Number of variables
     propE <- propE # Proportion of edges being connected
@@ -41,7 +42,7 @@ sim_scm <- function(nSample = 300, nE = 4, nNode = 50, propE = 0.1, nI = 30, idx
 
 
     nNode <- nrow(mat) # Recalculate the number of variables after inclusion of interventions
-    idxY <- nI + idxY # Set the id of the response
+    idxY <- nI + idxY.default # Set the id of the response
     idxX <- (1:nNode)[-c(1:nI,idxY)] # Set the id of the predictors
     idxItv <- sample(idxX, nI) # Randomly chose predictors to intervene, the chosen predictors' id are recorded
     for(i in 1:nI) mat[i,idxItv[i]] = 1 # Adjust the adjacency matrix accordingly by connecting interventions with their targeted predictors

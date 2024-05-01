@@ -16,6 +16,13 @@ Please be noted that this is an instruction of using StableMate by sourcing a R 
 The proper R package is under development, and it will be released soon. **But we expect that what we documented here should also work easy and well :)**
 
 ## Setup 
+First install from github.
+
+```r
+devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg', build_vignettes = T)
+```
+
+
 StableMate requires loading the R package *StableMate* to the global environment.
 
 
@@ -35,7 +42,7 @@ Here we simulate systems of one response, 49 predictors under four environments.
 sim_out <- sim_scm()
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![](figure/unnamed-chunk-3-1.png)
 
 ```r
 str(sim_out)
@@ -43,20 +50,20 @@ str(sim_out)
 
 ```
 ## List of 8
-##  $ trainX: num [1:900, 1:49] -10.8 -10.4 -10.7 -10.9 -10.7 ...
+##  $ trainX: num [1:900, 1:49] -11.9 -11.6 -13.3 -12.5 -12.2 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:49] "X31" "X32" "X33" "X34" ...
-##  $ trainY: num [1:900] -0.417 -0.261 0.294 2.409 1.929 ...
-##  $ testX : num [1:300, 1:49] 3.05 3.48 2.56 3.9 2.52 ...
+##  $ trainY: num [1:900] 110 107 110 110 115 ...
+##  $ testX : num [1:300, 1:49] 9.47 9.1 8.98 9.06 10.98 ...
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : NULL
 ##   .. ..$ : chr [1:49] "X31" "X32" "X33" "X34" ...
-##  $ testY : num [1:300] -43.3 -46.2 -47.6 -46 -40.5 ...
+##  $ testY : num [1:300] 103 113 113 102 103 ...
 ##  $ envs  : Factor w/ 3 levels "e1","e2","e3": 1 1 1 1 1 1 1 1 1 1 ...
-##  $ idxMb : int [1:18] 33 34 44 46 53 60 61 64 76 42 ...
-##  $ idxSb : int [1:8] 33 34 44 46 53 60 64 42
-##  $ idxNsb: int [1:10] 61 76 39 41 43 52 32 36 68 71
+##  $ idxMb : int [1:23] 38 41 48 56 59 75 76 78 51 39 ...
+##  $ idxSb : int [1:3] 38 41 48
+##  $ idxNsb: int [1:20] 56 59 75 76 78 51 39 45 52 32 ...
 ```
 
 The first three environments were treated as training environments, and the last environment was treated as the testing environment. 
@@ -79,6 +86,11 @@ system.time(
 )
 ```
 
+```
+##    user  system elapsed 
+##   10.11    0.51   10.94
+```
+
 Selection result is summarized by calling the resulting R object.
 
 
@@ -86,10 +98,45 @@ Selection result is summarized by calling the resulting R object.
 mod_st2e
 ```
 
+```
+## ----------------------------------------------------
+## Summary of the objective scores of selections in the ensemble:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##  -408.7  -390.8  -380.3  -370.6  -362.9  -203.9 
+## ----------------------------------------------------
+## Selections are made based on conditional importance scores 
+## Predictors selected significantly more often than the pseudo-predictor are: 
+## X32 X34 X38 X40 X41 X47 X48 X50 X56 X75
+```
+
 In theory, the set of predictor that minimizes BIC is the Markov Blank (MB) of the response. From the structural causal model we build, we know which predictors are in MB, and we compare the these (true MB) predictors with the st2e selection
 
 
 
+```
+## True MB:
+```
+
+```
+##  [1] "X38" "X41" "X48" "X56" "X59" "X75" "X76" "X78" "X51" "X39" "X45" "X52" "X32" "X34" "X40" "X47" "X50" "X33" "X46"
+## [20] "X49" "X31" "X72" "X77"
+```
+
+```
+## Correctly selected:
+```
+
+```
+##  [1] "X32" "X34" "X38" "X40" "X41" "X47" "X48" "X50" "X56" "X75"
+```
+
+```
+## Falsely selected:
+```
+
+```
+## character(0)
+```
 
 *st2e* did not make many selections due to a lack of repetition (small $K$) and hence little confidence. The repetition can be increased in practice. We can also visualize selections by
 
@@ -97,6 +144,8 @@ In theory, the set of predictor that minimizes BIC is the Markov Blank (MB) of t
 ```r
 plot(mod_st2e) 
 ```
+
+![](figure/unnamed-chunk-8-1.png)
 
 The black dashed line is the selection importance score of the pseudo-predictor. If a true predictor is selected more often than the pseudo-predictor in a bootstrap procedure, we consider the true predictor as being selected by *st2e*. Therefore, the importance score of the pseudo-predictor can be intuitively (and roughly) thought of as a significant threshold. 
 
@@ -115,6 +164,38 @@ system.time(
 )
 ```
 
+```
+## discovered package(s): 
+## automatically exporting the following variables from the local environment:
+##   a, alpha, b, beta, do_rand_start, do_switch, ensemble, env, idx_chunk, lambda, max_size, new_obj_fun, obj_fun, one_st2e_itr, pred_pool, reg_fun, ret_mod, sel_fun, t, X, Y 
+## explicitly exporting variables(s): rbeta_binom, dbeta_binom, st2_fwd, st2_bwd, st2_swt
+## explicitly exporting package(s): Matrix
+## numValues: 5, numResults: 0, stopped: TRUE
+## got results for task 1
+## numValues: 5, numResults: 1, stopped: TRUE
+## returning status FALSE
+## got results for task 2
+## numValues: 5, numResults: 2, stopped: TRUE
+## returning status FALSE
+## got results for task 3
+## numValues: 5, numResults: 3, stopped: TRUE
+## returning status FALSE
+## got results for task 4
+## numValues: 5, numResults: 4, stopped: TRUE
+## returning status FALSE
+## got results for task 5
+## numValues: 5, numResults: 5, stopped: TRUE
+## calling combine function
+## evaluating call object to combine results:
+##   fun(accum, result.1, result.2, result.3, result.4, result.5)
+## returning status TRUE
+```
+
+```
+##    user  system elapsed 
+##    1.43    0.11    5.68
+```
+
 Compared to *st2e* without parallel computing, the computational time has been greatly reduced. 
 
 ## StableMate
@@ -131,6 +212,15 @@ y <- sim_out$trainY
 X <- sim_out$trainX
 env <- sim_out$envs
 table(env)
+```
+
+```
+## env
+##  e1  e2  e3 
+## 300 300 300
+```
+
+```r
 # Y: response
 # X: predictor matrix
 # K: the number of ST2 repetition (the ensemble size)
@@ -140,11 +230,39 @@ system.time(
 )
 ```
 
+```
+##    user  system elapsed 
+##    4.27    0.17   17.18
+```
+
 Selection result is summarized again by calling the resulting R object.
 
 
 ```r
 mod_stbm 
+```
+
+```
+## ----------------------------------------------------
+## Summary of the objective scores of the selections in the prediction ensemble:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -1405.7 -1383.4 -1371.8 -1356.5 -1354.5  -779.2 
+## ----------------------------------------------------
+## Selections of predictive predictors are made based on joint importance scores 
+## Predictors selected significantly more often than the pseudo-predictor in the predictivity selection are: 
+## X32 X34 X38 X40 X41 X47 X48 X50 X52 X56 X59 X72 X75 X78 
+## 
+## ----------------------------------------------------
+## Summary of the objective scores of the selections in the stable ensemble:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   38.39   88.23  156.52  260.46  245.71 2484.21 
+## ----------------------------------------------------
+## Selections of stale predictors are made based on conditional importance scores 
+## Predictors selected as predictive and selected significantly more often than the pseudo-predictor in the stability selection are: 
+## X41 
+## 
+## Predictors selected as predictive and selected significantly less often than the pseudo-predictor in the stability selection are: 
+## X47 X52 X56
 ```
 
 And again we can visualize selections by
@@ -153,6 +271,8 @@ And again we can visualize selections by
 ```r
 plot(mod_stbm) 
 ```
+
+![](figure/unnamed-chunk-12-1.png)
 
 The vertical dashed lines correspond to the (0.025, 0.975) bootstrap quantile of the predictivity score (selection importance score in the predictivity selection) of the pseudo-predictor. True predictors with predictivity scores larger than the upper quantile are selected as predictive and hence marked in the plot. Similarly, the horizontal dashed lines corresponds to the bootstrap quantile of the stability score of the pseudo-predictor. stability selection is done analogously. 
 
@@ -164,6 +284,8 @@ Note that, the stability scores we show here are **conditional**: they measure h
 # Another option is 'joint'
 plot(mod_stbm, stab_imp_type = 'joint') 
 ```
+
+![](figure/unnamed-chunk-13-1.png)
 
 These joint importance scores are better measurement of the overall goodness of predictors in constructing prediction models.
 
@@ -196,6 +318,8 @@ legend(x = "bottomright",
        cex = 1)                 
 ```
 
+![](figure/unnamed-chunk-14-1.png)
+
 Prediction made by the ensemble trained with predictive and stable predictors (annotated as *Stable ensemble* in the plot) show least deviance from the actual value of the response. 
 
 *st2e* object can also make prediction using the *predict* function. *st2e* object only contains a single variable selection ensemble and hence a single regression ensemble. Therefore, there is no option to select which ensemble to predict. 
@@ -216,7 +340,30 @@ We test the usage of *lasso_prefilt* with a larger simulated data set containing
 
 ```r
 sim_out <- sim_scm(nNode = 500, nI = 250, propE = 0.01, idxY = 250)
+```
+
+![](figure/unnamed-chunk-16-1.png)
+
+```r
 str(sim_out)
+```
+
+```
+## List of 8
+##  $ trainX: num [1:900, 1:499] 5.04 5.71 5.02 5.48 5.76 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:499] "X251" "X252" "X253" "X254" ...
+##  $ trainY: num [1:900] -38.3 -36.8 -41.1 -33.5 -41 ...
+##  $ testX : num [1:300, 1:499] -5.69 -5.9 -5.62 -5.65 -5.63 ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : NULL
+##   .. ..$ : chr [1:499] "X251" "X252" "X253" "X254" ...
+##  $ testY : num [1:300] -38.5 -40.6 -43 -42.1 -42.6 ...
+##  $ envs  : Factor w/ 3 levels "e1","e2","e3": 1 1 1 1 1 1 1 1 1 1 ...
+##  $ idxMb : int [1:15] 364 390 442 679 719 736 272 432 518 575 ...
+##  $ idxSb : int [1:12] 364 390 442 719 736 518 575 710 481 565 ...
+##  $ idxNsb: int [1:3] 679 272 432
 ```
 
 We use *lasso_prefilt* to repeat randomized lasso for 100 times, each time make a selection of 50 predictors. Parallel computing is enabled, and the usage is the same as described in [Parallel computing].
@@ -234,7 +381,34 @@ env <- sim_out$envs
 system.time(
   pred_pool <- lasso_prefilt(Y = y, X = X, env = env, p = 50, K = 100, ncore = 5, verbose = F)
 )
+```
+
+```
+## Warning: <anonymous>: ... may be used in an incorrect context: 'glmnet::glmnet(X[idx, ], Y[idx], weights = w, ...)' (C:/Users/yidid/StableMate/pkg/R/lasso_prefilt.R:72)
+```
+
+```
+## Warning: <anonymous>: ... may be used in an incorrect context: 'glmnet::glmnet(X[idx, ], Y[idx], ...)' (C:/Users/yidid/StableMate/pkg/R/lasso_prefilt.R:74)
+```
+
+```
+##    user  system elapsed 
+##    0.04    0.03    5.36
+```
+
+```r
 head(pred_pool)
+```
+
+```
+## 6 x 18 Matrix of class "dgeMatrix"
+##      pseudo_predictor X290 X333 X364 X367 X390 X433 X439 X442 X481 X496 X524 X637 X641 X674 X687 X740 X742
+## [1,]                1    1    1    1    0    1    1    1    1    0    1    1    1    0    0    0    1    1
+## [2,]                1    1    1    1    1    1    1    1    1    1    0    1    1    1    0    1    1    1
+## [3,]                1    1    1    1    0    1    1    1    1    0    0    1    1    1    0    1    1    1
+## [4,]                1    1    1    1    1    1    1    1    1    0    1    1    1    1    0    0    1    1
+## [5,]                1    1    1    1    1    1    1    1    1    0    0    1    1    1    0    1    1    1
+## [6,]                1    1    1    1    1    1    1    1    1    0    0    1    1    1    0    0    1    1
 ```
 
 *lasso_prefilt* will generate an indicator matrix with columns representing predictors and each row corresponds to a selection result in one run of randomized lasso (1 represents selected, 0 otherwise). Now we can provide this indicator matrix to the *st2e* function.
@@ -244,6 +418,33 @@ head(pred_pool)
 # This chunk of code is not implemented, just for demonstration purpose.
 # pred_pool: restricting the variable selection space of ST2. Can be a vector of predictor names, or an indicator matrix specifying the predictor pool of each ST2 selection across the size K ensemble.
 mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5, pred_pool = pred_pool)
+```
+
+```
+## discovered package(s): 
+## automatically exporting the following variables from the local environment:
+##   a, alpha, b, beta, do_rand_start, do_switch, ensemble, env, idx_chunk, lambda, max_size, new_obj_fun, obj_fun, one_st2e_itr, pred_pool, reg_fun, ret_mod, sel_fun, t, X, Y 
+## explicitly exporting variables(s): rbeta_binom, dbeta_binom, st2_fwd, st2_bwd, st2_swt
+## explicitly exporting package(s): Matrix
+## numValues: 5, numResults: 0, stopped: TRUE
+## got results for task 1
+## numValues: 5, numResults: 1, stopped: TRUE
+## returning status FALSE
+## got results for task 2
+## numValues: 5, numResults: 2, stopped: TRUE
+## returning status FALSE
+## got results for task 3
+## numValues: 5, numResults: 3, stopped: TRUE
+## returning status FALSE
+## got results for task 4
+## numValues: 5, numResults: 4, stopped: TRUE
+## returning status FALSE
+## got results for task 5
+## numValues: 5, numResults: 5, stopped: TRUE
+## calling combine function
+## evaluating call object to combine results:
+##   fun(accum, result.1, result.2, result.3, result.4, result.5)
+## returning status TRUE
 ```
 
 *stablemate* runs *st2e* for two times, the first time selects predictive predictors and the second time selects stable predictors within the predictive predictors selected. Each of the two *st2e* run can be controlled by users independently via the *pred_st2_ctrl* and *stab_st2_ctrl* argument of *stablemate*. We define the predictor pool of the first *st2e* in *stablemate* to pre-filter for *stablemate*:
@@ -256,6 +457,11 @@ system.time(
   mod_stbm <- stablemate(Y = y, X = X, env = env, K = 100, ncore = 5,
                          pred_st2_ctrl = list(pred_pool = pred_pool), verbose = F)
 )
+```
+
+```
+##    user  system elapsed 
+##    3.68    0.13    8.55
 ```
 
 *stablemate* achieves a similar running time as the previous test run on the simulated data of 50 predictors.
@@ -291,6 +497,11 @@ system.time(
 )
 ```
 
+```
+##    user  system elapsed 
+##    0.06    0.06    5.03
+```
+
 We run *st2e* to select within the pre-filtered predictors of randomized lasso (i.e, *pred_pool*), and use *obj_bic_logit* to calculate objective scores, use *reg_logit* to build regression models.
 
 
@@ -300,6 +511,33 @@ We run *st2e* to select within the pre-filtered predictors of randomized lasso (
 # obj_fun: the objective function of variable selection.
 mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5, 
                  reg_fun = reg_logit, obj_fun = obj_bic_logit, pred_pool = pred_pool)
+```
+
+```
+## discovered package(s): 
+## automatically exporting the following variables from the local environment:
+##   a, alpha, b, beta, do_rand_start, do_switch, ensemble, env, idx_chunk, lambda, max_size, new_obj_fun, obj_fun, one_st2e_itr, pred_pool, reg_fun, ret_mod, sel_fun, t, X, Y 
+## explicitly exporting variables(s): rbeta_binom, dbeta_binom, st2_fwd, st2_bwd, st2_swt
+## explicitly exporting package(s): Matrix
+## numValues: 5, numResults: 0, stopped: TRUE
+## got results for task 1
+## numValues: 5, numResults: 1, stopped: TRUE
+## returning status FALSE
+## got results for task 2
+## numValues: 5, numResults: 2, stopped: TRUE
+## returning status FALSE
+## got results for task 3
+## numValues: 5, numResults: 3, stopped: TRUE
+## returning status FALSE
+## got results for task 4
+## numValues: 5, numResults: 4, stopped: TRUE
+## returning status FALSE
+## got results for task 5
+## numValues: 5, numResults: 5, stopped: TRUE
+## calling combine function
+## evaluating call object to combine results:
+##   fun(accum, result.1, result.2, result.3, result.4, result.5)
+## returning status TRUE
 ```
 
 *stablemate* can be implemented with customized objective function and regression function by controlling its internal *st2e* runs as what we done in [Dealing with high dimensional data with pre-filtering]. We provide an alternative objective function *obj_pss_logit* to select stable predictors for logistic regression.  
@@ -315,6 +553,11 @@ system.time(
 )
 ```
 
+```
+##    user  system elapsed 
+##    4.00    0.02   38.62
+```
+
 To make prediction based on the logistic models trained in *stablemate*, we also use the *predict* function defined for the *stablemate* object class, but we need to provide the alternative prediction function *pred_logit* to define how does logistic model make prediction. 
 
 
@@ -323,4 +566,6 @@ To make prediction based on the logistic models trained in *stablemate*, we also
 Yhat_stab <- predict(mod_stbm, X, pred_fun = pred_logit) 
 plot(Yhat_stab, y, xlab = 'Predicted probability of being 1', ylab = 'Y (binary class 1 or 0)')
 ```
+
+![](figure/unnamed-chunk-24-1.png)
 

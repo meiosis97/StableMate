@@ -204,13 +204,13 @@ stablemate <- function(Y, X, env, K = 100,
       message('The stable ensemble is built based on the prediction ensemble: the importance scores measuring predictivity and stability should be calculated together and matched. Use the pred_calc_imp_ctrl as the control for cal_imp function.')
       # If predictor pools provided are the results of StableMate pre-filtering based on Lasso, scale the
       # importance score of the pseudo-predictor
-      if(!is.null(attributes(pred_st2_ctrl$pred_pool)$stbm_lasso) & is.null(pred_calc_imp_ctrl$scale_psd_imp)){
-        pred_calc_imp_ctrl$scale_psd_imp <- TRUE
+      if(!is.null(attributes(pred_st2_ctrl$pred_pool)$stbm_lasso) & is.null(pred_calc_imp_ctrl$scale)){
+        pred_calc_imp_ctrl$scale <- TRUE
 
       }
 
       # A list containing all the default controls for calculating importance scores
-      defaults <- list(prune = T, prefilt_scores = NULL, scale_psd_imp = F, per_pred_evl = F, B = 5000)
+      defaults <- list(prune = T, prefilt_scores = NULL, scale = F, pooled = T, B = 5000)
 
       # Check whether all the controls provided for calculating importance scores are valid
       ctrl_names <- names(pred_calc_imp_ctrl)
@@ -241,13 +241,13 @@ stablemate <- function(Y, X, env, K = 100,
       ############### Calculate the importance scores measuring predictivity of predictors ###############
       # If predictor pools provided are the results of StableMate pre-filtering based on Lasso, scale the
       # importance score of the pseudo-predictor
-      if(!is.null(attributes(pred_st2_ctrl$pred_pool)$stbm_lasso) & is.null(pred_calc_imp_ctrl$scale_psd_imp)){
-        pred_calc_imp_ctrl$scale_psd_imp <- TRUE
+      if(class(pred_st2_ctrl$pred_pool) == "lasso_ensemble" & is.null(pred_calc_imp_ctrl$scale)){
+        pred_calc_imp_ctrl$scale <- TRUE
 
       }
 
       # A list containing all the default controls for calculating importance scores measuring predictivity
-      defaults <- list(prune = T, prefilt_scores = NULL, scale_psd_imp = F, per_pred_evl = F, B = 5000)
+      defaults <- list(prune = T, prefilt_scores = NULL, scale = F, pooled = T, B = 5000)
 
       # Check whether all the controls provided for calculating importance scores are valid
       ctrl_names <- names(pred_calc_imp_ctrl)
@@ -273,13 +273,13 @@ stablemate <- function(Y, X, env, K = 100,
       ############### Calculate the importance scores of measuring stability of predictors ###############
       # If predictor pools provided are the results of StableMate pre-filtering based on Lasso, scale the
       # importance score of the pseudo-predictor
-      if(!is.null(attributes(stab_st2_ctrl$pred_pool)$stbm_lasso) & is.null(stab_calc_imp_ctrl$scale_psd_imp)){
-        stab_calc_imp_ctrl$scale_psd_imp <- TRUE
+      if(class(stab_st2_ctrl$pred_pool) == "lasso_ensemble" & is.null(stab_calc_imp_ctrl$scale)){
+        stab_calc_imp_ctrl$scale <- TRUE
 
       }
 
       # A list containing all the default controls for calculating the importance scores measuring stability of predictors
-      defaults <- list(prune = T, prefilt_scores = NULL, scale_psd_imp = F, per_pred_evl = F, B = 5000)
+      defaults <- list(prune = T, prefilt_scores = NULL, scale = F, pooled = T, B = 5000)
 
       # Check whether all the controls provided for calculating importance scores are valid
       ctrl_names <- names(stab_calc_imp_ctrl)

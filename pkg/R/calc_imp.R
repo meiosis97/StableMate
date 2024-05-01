@@ -15,10 +15,10 @@
 #' weighted by ranking quantiles of \code{prefilt_scores} when calculating importance scores.
 #' When \code{st2e_obj2} is given, \code{prefilt_scores} will be set as the objective scores of \code{st2e_obj2}. By default is set to
 #' a vector of ones.
-#' @param scale_psd_imp Logical; If TRUE, scale the importance score of the pseudo-predictor by importance scores calculated on
+#' @param scale Logical; If TRUE, scale the importance score of the pseudo-predictor by importance scores calculated on
 #' predictor pools. Used only when the predictor pools of \code{st2e_obj} are pre-filtered by methods other than  \code{\link[StableMate]{st2e}}.
-#' @param per_pred_evl Logical; If TRUE, each predictor will be benchmarked against the pseudo-predictor selections whose
-#' predictor pools contains the query predictor. Otherwise, all predictors are benchmarked against the same set of pseudo-predictor selections,
+#' @param pooled Logical; If FALSE, each predictor will be benchmarked against the pseudo-predictor within the selections made
+#' from the query predictor's pool. Otherwise, all predictors are benchmarked against the same set of pseudo-predictor selections,
 #' which are usually all the selections in the ensemble if the pseudo-predictor is included in every predictor pool.
 #' @param B Numeircal; The number of bootstrapping iteration for calculating importance scores.
 #'
@@ -29,8 +29,8 @@
 #' @seealso \code{\link[StableMate]{st2e}()}
 #' @name calc_imp
 #' @rdname calc_imp
-calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NULL, scale_psd_imp = F,
-                     per_pred_evl = F, B = 1000){
+calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NULL, scale = F,
+                     pooled = T, B = 1000){
 
   if(class(st2e_obj) != 'st2e') stop("The st2e_obj provided is not a st2e object")
 
@@ -108,7 +108,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   # in which we generate predictor-specific benchmark for each predictor based on the
   # pseudo-predictor
 
-  if(per_pred_evl){
+  if(!pooled){
     if(all(st2e_obj$pred_pool[,1] == 1)){
       # Build a matrix that replicates P selections results of the pseudo-predictor over K repeated selections
       mask_mat <- matrix(rep(st2e_obj$ensemble[,1],P),ncol = P)
@@ -122,8 +122,8 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
       colnames(benchmark) <- pred_names
 
     }else{
-      warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj, set per_pred_evl to FALSE.")
-      per_pred_evl <- FALSE
+      warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj, set pooled to TRUE")
+      pooled <- TRUE
     }
 
   }
@@ -158,7 +158,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
 
     # Set up predictor-wise evaluation of the significance of the conditional importance scores the predictors selected by st2e_obj2,
     # similar as what has been done for st2e_obj
-    if(per_pred_evl){
+    if(!pooled){
       if(all(st2e_obj2$pred_pool[,1] == 1)){
         mask_mat2 <- matrix(rep(st2e_obj2$ensemble[,1],P),ncol = P)
         mask_mat2 <- mask_mat2 * st2e_obj2$pred_pool
@@ -167,8 +167,8 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
         colnames(benchmark2) <- pred_names
 
       }else{
-        warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj2, set per_pred_evl to FALSE.")
-        per_pred_evl <- FALSE
+        warning("The pseudo-predictor is not included in all the predictor pools of st2e_obj2, set pooled to TRUE.")
+        pooled <- TRUE
       }
 
     }
@@ -181,7 +181,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
   # cannot apply proper selections on the pseudo-predictor. Assume that all the selections in the ensemble
   # were applied with the same stochastic pre-filtering procedure, and assume that the pseudo-predictor is
   # included in all the predictor pools
-  if(scale_psd_imp){
+  if(scale){
     if(!is.null(st2e_obj2)){
       # First calculate sizes of predictor pools
       pool_sizes <- rowSums(st2e_obj2$pred_pool[,-1])
@@ -231,7 +231,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     bt_condi_imp[b,] <-  bt_sel_imp[b,]/bt_prior_imp
     # Create a matrix storing the bootstrapped conditional importance scores of the pseudo-predictor
     # calculated with respect to the predictor pool of each true predictor
-    if(per_pred_evl) benchmark[b,] <- colSums(mask_mat[k,]*q_sel)/q_sel_sum/bt_prior_imp
+    if(!pooled) benchmark[b,] <- colSums(mask_mat[k,]*q_sel)/q_sel_sum/bt_prior_imp
 
     if(!is.null(st2e_obj2)){
       # Bootstrapped joint importance scores in st2e_obj2
@@ -249,13 +249,13 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
       # Bootstrapped conditional importance scores in st2e_obj2
       bt_condi_imp2[b,] <-  bt_sel_imp2[b,]/bt_prefilt_imp
       # Bootstrapped conditional importance scores of the pseudo-predictor
-      if(per_pred_evl) benchmark2[b,] <- colSums(mask_mat2[k,]*q_sel2)/q_sel_sum2/bt_prefilt_imp
+      if(!pooled) benchmark2[b,] <- colSums(mask_mat2[k,]*q_sel2)/q_sel_sum2/bt_prefilt_imp
 
     }
 
     # Scale the importance score of the pseudo-predictor if the pre-filtering procedure
     # cannot filter the pseudo-predictor
-    if(scale_psd_imp){
+    if(scale){
       avg_pool_size <-  floor(mean(pool_sizes[k]))
       if(!is.null(st2e_obj2)){
         s <- sort(bt_prefilt_imp[-1], decreasing = T)[avg_pool_size]
@@ -290,7 +290,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
 
   # For a true predictor, calculate how often it obtains higher (lower) conditional importance scores
   # than the pseudo-predictor over the bootstrap iteration
-  if(per_pred_evl){
+  if(!pooled){
     benchmark[is.na(benchmark)] <- 0
     benchmark <- Matrix::Matrix(benchmark)
     significance <- colMeans(bt_condi_imp > benchmark)
@@ -323,7 +323,7 @@ calc_imp <- function(st2e_obj, st2e_obj2 = NULL, prune = T, prefilt_scores = NUL
     condi_imp2[is.na(condi_imp2)] <- 0
     bt_condi_imp2[is.na(bt_condi_imp2)] <- 0
     bt_condi_imp2 <- Matrix::Matrix(bt_condi_imp2)
-    if(per_pred_evl){
+    if(!pooled){
       benchmark2[is.na(benchmark2)] <- 0
       benchmark2 <- Matrix::Matrix(benchmark2)
       significance <- colMeans(bt_condi_imp2 > benchmark2)

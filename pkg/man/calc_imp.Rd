@@ -9,8 +9,8 @@ calc_imp(
   st2e_obj2 = NULL,
   prune = T,
   prefilt_scores = NULL,
-  scale_psd_imp = F,
-  per_pred_evl = F,
+  scale = F,
+  pooled = T,
   B = 1000
 )
 }
@@ -27,11 +27,11 @@ weighted by ranking quantiles of \code{prefilt_scores} when calculating importan
 When \code{st2e_obj2} is given, \code{prefilt_scores} will be set as the objective scores of \code{st2e_obj2}. By default is set to
 a vector of ones.}
 
-\item{scale_psd_imp}{Logical; If TRUE, scale the importance score of the pseudo-predictor by importance scores calculated on
+\item{scale}{Logical; If TRUE, scale the importance score of the pseudo-predictor by importance scores calculated on
 predictor pools. Used only when the predictor pools of \code{st2e_obj} are pre-filtered by methods other than  \code{\link[StableMate]{st2e}}.}
 
-\item{per_pred_evl}{Logical; If TRUE, each predictor will be benchmarked against the pseudo-predictor selections whose
-predictor pools contains the query predictor. Otherwise, all predictors are benchmarked against the same set of pseudo-predictor selections,
+\item{pooled}{Logical; If FALSE, each predictor will be benchmarked against the pseudo-predictor within the selections made
+from the query predictor's pool. Otherwise, all predictors are benchmarked against the same set of pseudo-predictor selections,
 which are usually all the selections in the ensemble if the pseudo-predictor is included in every predictor pool.}
 
 \item{B}{Numeircal; The number of bootstrapping iteration for calculating importance scores.}
