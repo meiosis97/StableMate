@@ -17,6 +17,9 @@ Install from github
 devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg')
 ```
 
+## Usage
+
+
 ## Reference
 Deng, Y., Mao, J., Choi, J., & Le Cao, K. A. (2023). StableMate: a new statistical method to select stable predictors in omics data. bioRxiv, 2023-09.
 
