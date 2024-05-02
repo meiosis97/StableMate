@@ -27,7 +27,18 @@ Run StableMate regression
 #' @param ncore Numerical; Numerical; If greater than 0. Parallel computing is enabled.
 mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
 ```
+Print StableMate regression
+``` r
+mod_stbm
+```
 Plot StableMate regression
+``` r
+plot(mod_stbm)
+```
+Predict by StableMate regression
+``` r
+predict(mod_stbm,  X = X)
+```
 
 
 ## Reference
