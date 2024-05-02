@@ -18,6 +18,7 @@ devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg')
 ```
 
 ## Usage
+More details can be found in the [pkg](./pkg) folder.
 Run StableMate regression
 ``` r
 #' @param Y A response vector or matrix depending on the objective function. It should be a vector if the function is used with
@@ -30,6 +31,28 @@ mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
 Print StableMate regression
 ``` r
 mod_stbm
+```
+```
+## ----------------------------------------------------
+## Summary of the objective scores of the selections in the prediction ensemble:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -1405.7 -1383.4 -1371.8 -1356.5 -1354.5  -779.2 
+## ----------------------------------------------------
+## Selections of predictive predictors are made based on joint importance scores 
+## Predictors selected significantly more often than the pseudo-predictor in the predictivity selection are: 
+## X32 X34 X38 X40 X41 X47 X48 X50 X52 X56 X59 X72 X75 X78 
+## 
+## ----------------------------------------------------
+## Summary of the objective scores of the selections in the stable ensemble:
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   38.39   88.23  156.52  260.46  245.71 2484.21 
+## ----------------------------------------------------
+## Selections of stale predictors are made based on conditional importance scores 
+## Predictors selected as predictive and selected significantly more often than the pseudo-predictor in the stability selection are: 
+## X41 
+## 
+## Predictors selected as predictive and selected significantly less often than the pseudo-predictor in the stability selection are: 
+## X47 X52 X56
 ```
 Plot StableMate regression
 ``` r
