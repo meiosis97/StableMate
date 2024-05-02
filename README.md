@@ -11,6 +11,8 @@ Go to the [analysis](./analysis) folder for the code and data used in [Deng et a
 ## StableMate package
 A proper package of StableMate is under development. However, we provide the source code of all SateleMate functions, along with a detailed vigenette, in the [pkg](./pkg) folder. What we have now only comes short in documentatiobn and environment management compared to a proper R package. Other than that, users can easily run StableMate by sourceing, [stablemate_pkg.R](./pkg/stablemate_pkg.R), the R script we provided 
 
+## Installation
+
 ## Reference
 Deng, Y., Mao, J., Choi, J., & Le Cao, K. A. (2023). StableMate: a new statistical method to select stable predictors in omics data. bioRxiv, 2023-09.
 
