@@ -9,7 +9,7 @@ StableMate is built based on the theoretical foundation of **Stabilized Regressi
 Go to the [analysis](./analysis) folder for the code and data used in [Deng et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1). 
 
 ## StableMate package
-A proper package of StableMate is under development. However, we provide the source code of all SateleMate functions, along with a detailed vigenette, in the [pkg](./pkg) folder. What we have now only comes short in documentatiobn and environment management compared to a proper R package. Other than that, users can easily run StableMate by sourceing, [stablemate_pkg.R](./pkg/stablemate_pkg.R), the R script we provided 
+A proper package of StableMate is under development. However, we provide the source code of all StableMate functions, along with a detailed vigenette, in the [pkg](./pkg) folder. What we have now only comes short in documentatiobn and environment management compared to a proper R package. Other than that, users can easily run StableMate by sourceing, [stablemate_pkg.R](./pkg/stablemate_pkg.R), the R script we provided 
 
 ## Installation
 Install from github
@@ -18,6 +18,14 @@ devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg')
 ```
 
 ## Usage
+``` r
+#' @param Y A response vector or matrix depending on the objective function. It should be a vector if the function is used with
+#' StableMate's default objective.
+#' @param X A predictor matrix with rows representing samples and columns representing predictors. The columns must be named.
+#' @param env A character vector indicates sample environments. Should be of the same length as the number of rows of \code{X}.
+#' @param ncore Numerical; Numerical; If greater than 0. Parallel computing is enabled.
+mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
+```
 
 
 ## Reference
