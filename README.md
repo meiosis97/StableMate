@@ -59,6 +59,7 @@ Plot StableMate regression
 plot(mod_stbm)
 ```
 ![](pkg/vignettes/figure/unnamed-chunk-12-1.png)
+
 Predict by StableMate regression
 ``` r
 predict(mod_stbm,  X = X)
