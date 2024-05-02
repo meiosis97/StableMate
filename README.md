@@ -18,6 +18,7 @@ devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg')
 ```
 
 ## Usage
+Run StableMate regression
 ``` r
 #' @param Y A response vector or matrix depending on the objective function. It should be a vector if the function is used with
 #' StableMate's default objective.
@@ -26,6 +27,7 @@ devtools::install_github('meiosis97/StableMate@main',subdir = 'pkg')
 #' @param ncore Numerical; Numerical; If greater than 0. Parallel computing is enabled.
 mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
 ```
+Plot StableMate regression
 
 
 ## Reference
