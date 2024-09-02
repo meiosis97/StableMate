@@ -6,7 +6,7 @@ StableMate is built based on the theoretical foundation of **Stabilized Regressi
 ![haha](./figures/intro.png)
 
 ## StableMate analysis
-Go to the [analysis](./analysis) folder for the code and data used in [Deng et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1). 
+The code and the data used in [Deng et al. (2023)](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1) were deposited to ZENODO.
 
 ## StableMate package
 We provide the source code of all StableMate functions, along with a detailed vigenette, in the [pkg](./pkg) folder. 
