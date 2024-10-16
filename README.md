@@ -26,7 +26,7 @@ Run StableMate regression
 #' StableMate's default objective.
 #' @param X A predictor matrix with rows representing samples and columns representing predictors. The columns must be named.
 #' @param env A character vector indicates sample environments. Should be of the same length as the number of rows of \code{X}.
-#' @param ncore Numerical; Numerical; If greater than 0. Parallel computing is enabled.
+#' @param ncore Numerical; If greater than 0. Parallel computing is enabled.
 mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
 ```
 Print StableMate regression
