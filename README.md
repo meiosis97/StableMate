@@ -35,7 +35,7 @@ pred_pool <- lasso_prefilt(Y = y, X = X, env = env, p = 50, K = 100, ncore = 5, 
 ```
 then run StableMate by 
 ``` r
-# @param pred_st2_ctrl Controls for st2e function that selects most predictive features of the response. pred_pool: A vector or a matrix that restricts the variable selection space. If a vector is given, it must #' be a vector of characters that is a subset of the column names of X. Section of "pseudo_predictor" can be enabled by adding a "pseudo_predictor" into \code{pred_pool}. When a matrix is given, it must be an #' indicator matrix
+#' @param pred_st2_ctrl Controls for st2e function that selects most predictive features of the response. pred_pool: A vector or a matrix that restricts the variable selection space. If a vector is given, it must #' be a vector of characters that is a subset of the column names of X. Section of "pseudo_predictor" can be enabled by adding a "pseudo_predictor" into \code{pred_pool}. When a matrix is given, it must be an #' #' indicator matrix
 mod_stbm <- stablemate(Y = y, X = X, env = env, K = 100, ncore = 5,
                        pred_st2_ctrl = list(pred_pool = pred_pool),
                        verbose = F)
