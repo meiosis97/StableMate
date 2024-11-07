@@ -29,6 +29,9 @@ Run StableMate regression
 #' @param ncore Numerical; If greater than 0. Parallel computing is enabled.
 mod_stbm <- stablemate(Y = y, X = X, env = env, K =100, ncore = 5, verbose = F)
 ```
+If the predictor matrix is high-dimensional (large in P), consider random pre-filtering.
+
+
 Print StableMate regression
 ``` r
 mod_stbm
