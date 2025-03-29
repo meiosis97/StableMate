@@ -1,4 +1,4 @@
-A introduction to StableMate
+An introduction to StableMate
 ================
 
 ## Before we start
