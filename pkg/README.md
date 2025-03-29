@@ -3,13 +3,13 @@ A introduction to StableMate
 
 ## Before we start
 
-Please be noted that this is an instruction of using StableMate by
-sourcing a R script, which contains all the StableMate functions but is
-not a proper R package. Sourcing a R script will load all the functions
-in the script to the R global environment, and this could overwrite the
-variables that are already defined in the global environment (if any
+Please note that this is an instruction on using StableMate by
+sourcing an R script, which contains all the StableMate functions but is
+not a proper R package. Sourcing an R script will load all the functions
+in the script to the R global environment, which could overwrite the
+variables already defined in the global environment (if any
 variable shares the same name as our functions). However, we created
-comprehensive names for our functions and so it’s not likely that such
+comprehensive names for our functions, so it’s not likely that such
 overwriting will happen.
 
 The proper R package is under development, and it will be released soon.
@@ -33,7 +33,7 @@ library(StableMate)
 
 Now we are ready to go!
 
-## Simulate data (just for demonstration purpose)
+## Simulate data (just for demonstration purposes)
 
 We demonstrate the usage of StableMate using simulated datasets. **So
 this section is not necessary if you have your own data**. We simulate
@@ -79,24 +79,24 @@ the last environment was treated as the testing environment.
 
 We start by introducing ST2, the algorithm on which variable selection
 in StableMate is based. Given a response and a set of predictors, the
-goal of ST2 is to find a subset of predictor to optimize a objective
+goal of ST2 is to find a subset of predictors to optimize an objective
 function. ST2 is a stochastic algorithm that could make different
-selections at its each run. Hence we run ST2 for multiple times to make
+selections at each run. Hence, we run ST2 multiple times to make
 repeated selections and build a variable selection ensemble. A final
 selection is made by aggregating repeated selections. See [our
-anuscript](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1.full)
+manuscript](https://www.biorxiv.org/content/10.1101/2023.09.26.559658v1.full)
 (Supplementary Method 7.1.4) for details.
 
 ### A test run of ST2
 
-Lets try to run ST2 on the simulated data with our function *st2e*
+Let's try to run ST2 on the simulated data with our function *st2e*
 (stands for stochastic stepwise variable selection). By default, the
 objective of *st2e* is to select predictors to minimize Bayesian
 information criteria of linear models, so the selected predictors are
 considered as being most predictive. The objective of *st2e* can be
 changed and be user-defined (We will discuss this later). On the testing
-data, we run *st2e* with one liner to build a ensemble of size 100. The
-larger the ensemble, the more certain we are at the final selection:
+data, we run *st2e* with one one-liner to build an ensemble of size 100. The
+larger the ensemble, the more certain we are of the final selection:
 
 ``` r
 y <- sim_out$testY
@@ -112,7 +112,7 @@ system.time(
     ##    user  system elapsed 
     ##   10.11    0.51   10.94
 
-Selection result is summarized by calling the resulting R object.
+The selection result is summarized by calling the resulting R object.
 
 ``` r
 mod_st2e
@@ -127,9 +127,9 @@ mod_st2e
     ## Predictors selected significantly more often than the pseudo-predictor are: 
     ## X32 X34 X38 X40 X41 X47 X48 X50 X56 X75
 
-In theory, the set of predictor that minimizes BIC is the Markov Blank
+In theory, the set of predictors that minimizes BIC is the Markov Blank
 (MB) of the response. From the structural causal model we build, we know
-which predictors are in MB, and we compare the these (true MB)
+which predictors are in MB, and we compare these (true MB)
 predictors with the st2e selection
 
     ## True MB:
@@ -172,9 +172,9 @@ parallel computing method to be used by *st2e***.
 
 - Set *par_method* = “SNOW” for a WINDOWS machine
 - Set *par_method* = “MC” for a non-windows machine (e.g, LINUX, macOS)
-- Set *par_method* = “MPI” for clusters, or high performance computing.
+- Set *par_method* = “MPI” for clusters, or high-performance computing.
 
-Since this vignette is written on a WINDOWS PC, we just need to specific
+Since this vignette is written on a WINDOWS PC, we just need to specify
 *ncore*, whereas *par_method* = “SNOW” is set as the default.
 
 ``` r
@@ -216,19 +216,19 @@ has been greatly reduced.
 
 ## StableMate
 
-StableMate algorithm is based on ST2. StableMate repeat a ST2 procedure
+StableMate algorithm is based on ST2. StableMate repeats a ST2 procedure
 that consists of two consecutive ST2 runs. StableMate first run ST2 to
 select predictors that are most predictive (with a objective of
 minimizing BIC of linear models by default). This is followed by a
 second run of ST2 that selects stable predictors within the predictive
-predictors just selected (with a objective of minimizing prediction sum
+predictors just selected (with a objective of minimizing the prediction sum
 of squares of linear models by default). Therefore, StableMate builds
 two ensembles, one with predictive selections and one with predictive
-and stable selections. The later must be a subset of the former.
+and stable selections. The latter must be a subset of the former.
 
 As stability is defined with respect to the environment from which data
-are collected. Compared to *st2e*, the *stablemate* function requires a
-additional environment variable indicting each sample’s environment (as
+are collected. Compared to *st2e*, the *stablemate* function requires an
+additional environment variable indicating each sample’s environment (as
 well as the objective for stability selections).
 
 ### A test run of StableMate
@@ -262,7 +262,7 @@ system.time(
     ##    user  system elapsed 
     ##    4.27    0.17   17.18
 
-Selection result is summarized again by calling the resulting R object.
+The selection result is summarized again by calling the resulting R object.
 
 ``` r
 mod_stbm 
@@ -289,7 +289,7 @@ mod_stbm
     ## Predictors selected as predictive and selected significantly less often than the pseudo-predictor in the stability selection are: 
     ## X47 X52 X56
 
-And again we can visualize selections by
+And again, we can visualize selections by
 
 ``` r
 plot(mod_stbm) 
@@ -302,11 +302,11 @@ quantile of the predictivity score (selection importance score in the
 predictivity selection) of the pseudo-predictor. True predictors with
 predictivity scores larger than the upper quantile are selected as
 predictive and hence marked in the plot. Similarly, the horizontal
-dashed lines corresponds to the bootstrap quantile of the stability
-score of the pseudo-predictor. stability selection is done analogously.
+dashed lines correspond to the bootstrap quantile of the stability
+score of the pseudo-predictor. Stability selection is done analogously.
 
-Note that, the stability scores we show here are **conditional**: they
-measure how stable predictors are conditioning on they are predictive.
+Note that the stability scores we show here are **conditional**: they
+measure how stable predictors are conditioning on whether they are predictive.
 We can also visualize how **predictive and stable** predictors are on
 the y-axis by changing the *stab_imp_type* argument of *stablemate*
 
@@ -318,13 +318,13 @@ plot(mod_stbm, stab_imp_type = 'joint')
 
 ![](vignettes/figure/unnamed-chunk-13-1.png)
 
-These joint importance scores are better measurement of the overall
+These joint importance scores are a better measurement of the overall
 goodness of predictors in constructing prediction models.
 
 ## Make prediction with StableMate (or ST2)
 
 *stablemate* (or *st2e*) fits a regression model (using linear
-regression by default but can be other user defined regression methods),
+regression by default but can be other user-defined regression methods),
 based on each ST2 selection. Therefore, *stablemate* generates two
 regression ensembles corresponding to its two variable selection
 ensembles: one trained with predictive predictors and one trained with
@@ -334,7 +334,7 @@ predictive and stable predictors. We wrote a *predict* method for our
 use for prediction. By default, prediction is made based on the
 regression ensemble trained with predictive and stable predictors.
 
-As a benchmark, we test prediction made by each type of ensemble as well
+As a benchmark, we test predictions made by each type of ensemble as well
 as by linear regression
 
 ``` r
@@ -363,7 +363,7 @@ legend(x = "bottomright",
 ![](vignettes/figure/unnamed-chunk-14-1.png)
 
 Prediction made by the ensemble trained with predictive and stable
-predictors (annotated as *Stable ensemble* in the plot) show least
+predictors (annotated as *Stable ensemble* in the plot) show the least
 deviance from the actual value of the response.
 
 *st2e* object can also make prediction using the *predict* function.
@@ -372,11 +372,11 @@ hence a single regression ensemble. Therefore, there is no option to
 select which ensemble to predict.
 
 ``` r
-# This chunk of code is not implemented, just for demonstration purpose
+# This chunk of code is not implemented, just for demonstration purposes
 predict(mod_st2e, testX)
 ```
 
-## Dealing with high dimensional data with pre-filtering
+## Dealing with high-dimensional data with pre-filtering
 
 *st2e* also has an option to control the predictor pool of each ST2 run
 that selects predictive predictors. The predictor pool restricts ST2 to
@@ -384,7 +384,7 @@ select only within the pool. This is useful when the predictor matrix
 $X$ is high-dimensional and we want to pre-filter predictors before
 running *st2e*
 
-Given that we want to build a ensemble of size $K$ using *st2e*, we can
+Given that we want to build an ensemble of size $K$ using *st2e*, we can
 first implement the *lasso_prefilt* function in our package to
 pre-filter predictors by repeating a randomized lasso selection for $K$
 times. Randomized lasso can make a different selection at each time due
@@ -420,8 +420,8 @@ str(sim_out)
     ##  $ idxSb : int [1:12] 364 390 442 719 736 518 575 710 481 565 ...
     ##  $ idxNsb: int [1:3] 679 272 432
 
-We use *lasso_prefilt* to repeat randomized lasso for 100 times, each
-time make a selection of 50 predictors. Parallel computing is enabled,
+We use *lasso_prefilt* to repeat randomized lasso 100 times, each
+time making a selection of 50 predictors. Parallel computing is enabled,
 and the usage is the same as described in [Parallel
 computing](#parallel-computing).
 
@@ -431,7 +431,7 @@ X <- sim_out$trainX
 env <- sim_out$envs
 # Y: response
 # X: predictor matrix
-# K: the number of randomized lasso repetition, this should be your desired ensemble size of your stablemate model
+# K: the number of randomized lasso repetitions, this should be your desired ensemble size of your stablemate model
 # env: environment variable
 # p: the number of predictors to select by each run of randomized lasso
 system.time(
@@ -465,8 +465,8 @@ in one run of randomized lasso (1 represents selected, 0 otherwise). Now
 we can provide this indicator matrix to the *st2e* function.
 
 ``` r
-# This chunk of code is not implemented, just for demonstration purpose.
-# pred_pool: restricting the variable selection space of ST2. Can be a vector of predictor names, or an indicator matrix specifying the predictor pool of each ST2 selection across the size K ensemble.
+# This chunk of code is not implemented, just for demonstration purposes.
+# pred_pool: restricting the variable selection space of ST2. It can be a vector of predictor names or an indicator matrix specifying the predictor pool of each ST2 selection across the size K ensemble.
 mod_st2e <- st2e(Y = y, X = X, env = env, K = 100, ncore = 5, pred_pool = pred_pool)
 ```
 
@@ -637,13 +637,13 @@ system.time(
     ##    user  system elapsed 
     ##    4.00    0.02   38.62
 
-To make prediction based on the logistic models trained in *stablemate*,
+To make predictions based on the logistic models trained in *stablemate*,
 we also use the *predict* function defined for the *stablemate* object
 class, but we need to provide the alternative prediction function
-*pred_logit* to define how does logistic model make prediction.
+*pred_logit* to define how does logistic model make predictions.
 
 ``` r
-# pred_fun: the function that makes prediction given data and a trained regression model.
+# pred_fun: the function that makes the predictions given data and a trained regression model.
 Yhat_stab <- predict(mod_stbm, X, pred_fun = pred_logit) 
 plot(Yhat_stab, y, xlab = 'Predicted probability of being 1', ylab = 'Y (binary class 1 or 0)')
 ```
